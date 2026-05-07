@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huella Financiada y Emisiones Financiadas · Sustainable Finance</title>
+<style>
+  :root {
+    --verde-oscuro: #0f3d2e;
+    --verde-medio: #1f7a5c;
+    --verde-claro: #2ea87a;
+    --azul-oscuro: #12355b;
+    --azul-medio: #1a4f8a;
+    --gris-claro: #f5f7f6;
+    --gris-medio: #e8ece9;
+    --blanco: #ffffff;
+    --dorado: #d8a24a;
+    --dorado-claro: #f0d080;
+    --texto-principal: #1a2e25;
+    --texto-secundario: #4a6358;
+    --rojo-alerta: #c0392b;
+    --verde-exito: #27ae60;
+    --sombra: 0 4px 20px rgba(15,61,46,0.12);
+    --sombra-hover: 0 8px 32px rgba(15,61,46,0.2);
+    --radio: 12px;
+    --radio-lg: 18px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--gris-claro);
+    color: var(--texto-principal);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--azul-oscuro) 60%, #0a2540 100%);
+    color: var(--blanco);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';
+    position:absolute;
+    top:-60px; right:-80px;
+    width:380px; height:380px;
+    background: radial-gradient(circle, rgba(216,162,74,0.15) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero::after {
+    content:'';
+    position:absolute;
+    bottom:-40px; left:30%;
+    width:240px; height:240px;
+    background: radial-gradient(circle, rgba(31,122,92,0.2) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-badge {
+    display:inline-block;
+    background: rgba(216,162,74,0.25);
+    border: 1px solid var(--dorado);
+    color: var(--dorado-claro);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    padding:5px 14px;
+    border-radius:20px;
+    margin-bottom:20px;
+  }
+  .hero h1 {
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 800;
+    line-height:1.2;
+    margin-bottom:16px;
+    letter-spacing:-0.5px;
+  }
+  .hero h1 span { color: var(--dorado-claro); }
+  .hero p {
+    font-size:clamp(14px,2vw,17px);
+    color: rgba(255,255,255,0.82);
+    max-width:680px;
+    margin-bottom:32px;
+  }
+  .hero-cards {
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .hero-card {
+    background: rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:10px;
+    padding:14px 20px;
+    min-width:140px;
+    backdrop-filter:blur(4px);
+  }
+  .hero-card .hc-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.55); font-weight:600; }
+  .hero-card .hc-val { font-size:18px; font-weight:800; color:var(--blanco); margin-top:3px; }
+  .hero-card .hc-sub { font-size:11px; color:rgba(255,255,255,0.65); margin-top:2px; }
+
+  /* ===== LAYOUT ===== */
+  .app-layout {
+    display: flex;
+    min-height: calc(100vh - 10px);
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--verde-oscuro);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar::-webkit-scrollbar { width:4px; }
+  .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--verde-medio); border-radius:4px; }
+
+  .sidebar-header {
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-title { color:rgba(255,255,255,0.5); font-size:10px; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+
+  /* Progress bar */
+  .progress-wrap {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .progress-label { display:flex; justify-content:space-between; margin-bottom:7px; }
+  .progress-label span { font-size:11px; color:rgba(255,255,255,0.55); }
+  .progress-label strong { font-size:12px; color:var(--dorado-claro); font-weight:700; }
+  .progress-bar-bg { background:rgba(255,255,255,0.1); border-radius:4px; height:6px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background: linear-gradient(90deg, var(--verde-claro), var(--dorado)); border-radius:4px; transition:width 0.5s ease; width:0%; }
+
+  /* Nav */
+  .nav-list { list-style:none; padding:10px 0 20px; flex:1; }
+  .nav-btn {
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    padding: 11px 20px;
+    color: rgba(255,255,255,0.65);
+    font-size:13px;
+    display:flex; align-items:center; gap:10px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    font-family: inherit;
+  }
+  .nav-btn:hover { background:rgba(255,255,255,0.06); color:var(--blanco); }
+  .nav-btn.active { background:rgba(31,122,92,0.25); color:var(--blanco); border-left-color:var(--verde-claro); font-weight:600; }
+  .nav-btn.completed { color:var(--verde-claro); }
+  .nav-btn .nav-icon { font-size:16px; min-width:20px; }
+  .nav-btn .nav-check { margin-left:auto; font-size:14px; color:var(--verde-claro); }
+  .nav-btn .nav-num {
+    background: rgba(255,255,255,0.12); border-radius:50%;
+    width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; min-width:22px; color:rgba(255,255,255,0.7);
+  }
+  .nav-btn.active .nav-num { background:var(--verde-medio); color:var(--blanco); }
+  .nav-btn.completed .nav-num { background:rgba(46,168,122,0.3); color:var(--verde-claro); }
+
+  .sidebar-tools {
+    padding:14px 20px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .sidebar-tool-btn {
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+    color:rgba(255,255,255,0.75); font-size:12px; font-family:inherit;
+    padding:8px 14px; border-radius:8px; cursor:pointer; text-align:left;
+    transition:all 0.2s; display:flex; align-items:center; gap:8px;
+  }
+  .sidebar-tool-btn:hover { background:rgba(255,255,255,0.13); color:var(--blanco); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    flex:1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .module-page { display:none; }
+  .module-page.active { display:block; }
+
+  .module-header {
+    background: linear-gradient(135deg, var(--azul-oscuro), var(--verde-oscuro));
+    padding: 40px 48px 32px;
+    color: var(--blanco);
+    position:relative; overflow:hidden;
+  }
+  .module-header::after {
+    content:'';
+    position:absolute; right:-20px; bottom:-20px;
+    width:200px; height:200px;
+    background:radial-gradient(circle, rgba(216,162,74,0.1) 0%, transparent 70%);
+  }
+  .module-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(216,162,74,0.2); border:1px solid rgba(216,162,74,0.4);
+    color:var(--dorado-claro); font-size:11px; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    padding:5px 12px; border-radius:20px; margin-bottom:14px;
+  }
+  .module-header h2 { font-size:clamp(20px,3vw,32px); font-weight:800; margin-bottom:10px; line-height:1.2; }
+  .module-header p { color:rgba(255,255,255,0.75); font-size:15px; max-width:640px; }
+  .module-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+  .module-meta-badge {
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+    color:rgba(255,255,255,0.8); font-size:11px; padding:4px 12px; border-radius:20px;
+    font-weight:600;
+  }
+
+  .module-body { padding: 40px 48px; max-width:960px; }
+
+  /* ===== SECTION HEADINGS ===== */
+  .section-title {
+    font-size:22px; font-weight:800; color:var(--verde-oscuro);
+    margin: 36px 0 16px; padding-bottom:10px;
+    border-bottom: 2px solid var(--gris-medio);
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title .s-num {
+    background:var(--verde-oscuro); color:var(--blanco);
+    font-size:11px; font-weight:700;
+    padding:3px 8px; border-radius:6px; letter-spacing:0.5px;
+  }
+  .subsection-title {
+    font-size:17px; font-weight:700; color:var(--azul-oscuro);
+    margin: 28px 0 12px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background:var(--blanco);
+    border-radius:var(--radio-lg);
+    box-shadow:var(--sombra);
+    padding:28px 32px;
+    margin:20px 0;
+  }
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:18px; margin:20px 0; }
+
+  .card-concepto {
+    background: linear-gradient(135deg, #e8f5f0, #f0f8f5);
+    border-left: 4px solid var(--verde-medio);
+    border-radius:var(--radio);
+    padding:20px 24px;
+    margin:18px 0;
+  }
+  .card-concepto .card-tag {
+    font-size:10px; text-transform:uppercase; letter-spacing:1.5px;
+    font-weight:700; color:var(--verde-medio); margin-bottom:6px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .card-concepto h4 { font-size:15px; font-weight:700; color:var(--verde-oscuro); margin-bottom:8px; }
+  .card-concepto p { font-size:14px; color:var(--texto-secundario); }
+
+  .card-ejemplo {
+    background: linear-gradient(135deg, #eff4fb, #e8eef8);
+    border-left: 4px solid var(--azul-medio);
+    border-radius:var(--radio);
+    padding:20px 24px;
+    margin:18px 0;
+  }
+  .card-ejemplo .card-tag { color:var(--azul-medio); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .card-ejemplo h4 { font-size:15px; font-weight:700; color:var(--azul-oscuro); margin-bottom:8px; }
+
+  .card-alerta {
+    background: linear-gradient(135deg, #fff8ee, #fff3e0);
+    border-left: 4px solid var(--dorado);
+    border-radius:var(--radio);
+    padding:20px 24px;
+    margin:18px 0;
+  }
+  .card-alerta .card-tag { color:var(--dorado); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+
+  .card-error {
+    background: linear-gradient(135deg, #fdf0ee, #fde8e5);
+    border-left: 4px solid var(--rojo-alerta);
+    border-radius:var(--radio);
+    padding:20px 24px;
+    margin:18px 0;
+  }
+  .card-error .card-tag { color:var(--rojo-alerta); font-size:10px; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+
+  /* ===== FORMULA BOX ===== */
+  .formula-box {
+    background: linear-gradient(135deg, var(--verde-oscuro), #1a4a38);
+    border-radius:var(--radio);
+    padding:24px 28px;
+    margin:20px 0;
+    color:var(--blanco);
+    font-family:'Courier New', monospace;
+  }
+  .formula-box .formula-label {
+    font-family:'Segoe UI', sans-serif;
+    font-size:10px; text-transform:uppercase; letter-spacing:2px;
+    color:var(--dorado-claro); font-weight:700; margin-bottom:10px;
+  }
+  .formula-box .formula-main {
+    font-size:clamp(14px,2.5vw,20px);
+    font-weight:700; color:var(--blanco);
+    background:rgba(255,255,255,0.08);
+    padding:14px 18px; border-radius:8px;
+    border:1px solid rgba(255,255,255,0.15);
+    margin-bottom:10px; text-align:center; letter-spacing:0.5px;
+  }
+  .formula-box .formula-vars { font-size:12px; color:rgba(255,255,255,0.7); font-family:'Segoe UI',sans-serif; }
+  .formula-box .formula-vars span { color:var(--dorado-claro); font-weight:600; }
+
+  /* ===== TABLES ===== */
+  .table-wrap { overflow-x:auto; margin:20px 0; border-radius:var(--radio); box-shadow:var(--sombra); }
+  table { width:100%; border-collapse:collapse; background:var(--blanco); }
+  thead tr { background: var(--verde-oscuro); }
+  thead th { color:var(--blanco); font-size:12px; font-weight:700; letter-spacing:0.5px; padding:13px 16px; text-align:left; }
+  tbody tr { border-bottom:1px solid var(--gris-medio); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:var(--gris-claro); }
+  tbody td { padding:12px 16px; font-size:13.5px; color:var(--texto-principal); vertical-align:top; }
+  tbody td:first-child { font-weight:600; color:var(--verde-oscuro); }
+  .td-formula { font-family:'Courier New',monospace; font-size:12px; background:rgba(15,61,46,0.06); padding:4px 8px; border-radius:4px; display:inline-block; }
+
+  /* ===== OBJETIVOS ===== */
+  .objetivos-box {
+    background:var(--blanco);
+    border:1px solid var(--gris-medio);
+    border-radius:var(--radio-lg);
+    padding:24px 28px;
+    margin:0 0 30px;
+    box-shadow:var(--sombra);
+  }
+  .objetivos-box h3 { font-size:14px; font-weight:700; color:var(--verde-oscuro); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .objetivos-list { list-style:none; }
+  .objetivos-list li { padding:7px 0; font-size:14px; color:var(--texto-secundario); display:flex; align-items:flex-start; gap:10px; }
+  .objetivos-list li::before { content:'✓'; color:var(--verde-claro); font-weight:800; font-size:14px; margin-top:1px; }
+
+  /* ===== MENSAJES CLAVE ===== */
+  .mensajes-box {
+    background: linear-gradient(135deg, var(--verde-oscuro), var(--azul-oscuro));
+    border-radius:var(--radio-lg);
+    padding:28px 32px;
+    margin:28px 0;
+    color:var(--blanco);
+  }
+  .mensajes-box h3 { font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--dorado-claro); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .mensajes-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .mensajes-list li { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:rgba(255,255,255,0.88); line-height:1.6; }
+  .mensajes-list li::before { content:'→'; color:var(--dorado-claro); font-weight:800; margin-top:1px; }
+
+  /* ===== QUIZ ===== */
+  .quiz-section {
+    background:var(--blanco);
+    border-radius:var(--radio-lg);
+    padding:28px 32px;
+    margin:28px 0;
+    box-shadow:var(--sombra);
+    border-top:4px solid var(--dorado);
+  }
+  .quiz-section h3 { font-size:16px; font-weight:800; color:var(--verde-oscuro); margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+  .quiz-section .quiz-subtitle { font-size:12px; color:var(--texto-secundario); margin-bottom:20px; }
+  .quiz-question { margin-bottom:24px; }
+  .quiz-question p { font-size:14px; font-weight:600; color:var(--texto-principal); margin-bottom:12px; line-height:1.5; }
+  .quiz-options { display:flex; flex-direction:column; gap:8px; }
+  .quiz-option {
+    background:var(--gris-claro); border:2px solid var(--gris-medio);
+    border-radius:10px; padding:12px 16px; cursor:pointer;
+    font-size:13.5px; color:var(--texto-principal); transition:all 0.2s;
+    display:flex; align-items:flex-start; gap:10px;
+  }
+  .quiz-option:hover { border-color:var(--verde-medio); background:#eef7f2; }
+  .quiz-option.correct { background:#e8f8ef; border-color:var(--verde-exito); color:var(--verde-oscuro); }
+  .quiz-option.incorrect { background:#fde8e5; border-color:var(--rojo-alerta); color:var(--rojo-alerta); }
+  .quiz-option.disabled { cursor:default; pointer-events:none; }
+  .quiz-option .opt-letter {
+    background:var(--gris-medio); color:var(--texto-secundario);
+    font-size:11px; font-weight:800; width:22px; height:22px; min-width:22px;
+    display:flex; align-items:center; justify-content:center; border-radius:50%;
+  }
+  .quiz-option.correct .opt-letter { background:var(--verde-exito); color:var(--blanco); }
+  .quiz-option.incorrect .opt-letter { background:var(--rojo-alerta); color:var(--blanco); }
+  .quiz-feedback {
+    display:none; margin-top:10px; padding:12px 16px;
+    border-radius:8px; font-size:13px; line-height:1.5;
+  }
+  .quiz-feedback.show { display:block; }
+  .quiz-feedback.fb-correct { background:#e8f8ef; color:#1a5e35; border-left:3px solid var(--verde-exito); }
+  .quiz-feedback.fb-incorrect { background:#fde8e5; color:#8e2017; border-left:3px solid var(--rojo-alerta); }
+  .quiz-score { display:none; background:var(--gris-claro); border-radius:10px; padding:16px 20px; margin-top:16px; text-align:center; }
+  .quiz-score.show { display:block; }
+  .quiz-score .score-num { font-size:32px; font-weight:800; color:var(--verde-oscuro); }
+  .quiz-score p { font-size:13px; color:var(--texto-secundario); margin-top:4px; }
+
+  /* ===== NAVIGATION BUTTONS ===== */
+  .module-nav-btns {
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    margin:40px 0 20px;
+    padding-top:24px;
+    border-top:1px solid var(--gris-medio);
+  }
+  .btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 22px; border-radius:10px;
+    font-size:13.5px; font-weight:700; font-family:inherit;
+    cursor:pointer; transition:all 0.2s; border:none; text-decoration:none;
+  }
+  .btn-primary {
+    background:var(--verde-oscuro); color:var(--blanco);
+  }
+  .btn-primary:hover { background:var(--verde-medio); transform:translateY(-1px); box-shadow:var(--sombra); }
+  .btn-secondary {
+    background:var(--blanco); color:var(--verde-oscuro);
+    border:2px solid var(--gris-medio);
+  }
+  .btn-secondary:hover { border-color:var(--verde-medio); transform:translateY(-1px); }
+  .btn-success {
+    background: linear-gradient(135deg, var(--verde-claro), var(--verde-medio));
+    color:var(--blanco);
+  }
+  .btn-success:hover { transform:translateY(-1px); box-shadow:var(--sombra); }
+  .btn-success.completed-state { background:linear-gradient(135deg, #27ae60, #1e8449); }
+  .btn-danger { background:#fde8e5; color:var(--rojo-alerta); border:2px solid #f5c6c2; }
+  .btn-danger:hover { background:#fcd5d0; transform:translateY(-1px); }
+  .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  /* ===== COLLAPSIBLE ===== */
+  .collapsible { margin:14px 0; }
+  .collapsible-toggle {
+    width:100%; text-align:left; background:var(--gris-claro);
+    border:1px solid var(--gris-medio); border-radius:10px;
+    padding:14px 18px; cursor:pointer; font-family:inherit;
+    font-size:14px; font-weight:600; color:var(--texto-principal);
+    display:flex; align-items:center; justify-content:space-between;
+    transition:all 0.2s;
+  }
+  .collapsible-toggle:hover { background:var(--gris-medio); }
+  .collapsible-toggle.open { background:var(--verde-oscuro); color:var(--blanco); border-radius:10px 10px 0 0; }
+  .collapsible-toggle .toggle-icon { transition:transform 0.3s; font-size:12px; }
+  .collapsible-toggle.open .toggle-icon { transform:rotate(180deg); }
+  .collapsible-body { display:none; padding:18px 22px; background:var(--blanco); border:1px solid var(--gris-medio); border-top:none; border-radius:0 0 10px 10px; }
+  .collapsible-body.open { display:block; }
+
+  /* ===== STEP DIAGRAM ===== */
+  .step-diagram {
+    display:flex; flex-wrap:wrap; gap:0; align-items:center; margin:20px 0;
+  }
+  .step-item {
+    background:var(--blanco); border:2px solid var(--gris-medio);
+    border-radius:10px; padding:16px 18px; text-align:center; flex:1; min-width:130px;
+  }
+  .step-item .step-num { font-size:11px; font-weight:700; color:var(--verde-medio); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .step-item .step-text { font-size:13px; font-weight:600; color:var(--texto-principal); }
+  .step-arrow { font-size:20px; color:var(--verde-medio); padding:0 4px; font-weight:700; }
+
+  /* ===== INLINE HIGHLIGHT ===== */
+  .hl { background:rgba(31,122,92,0.1); color:var(--verde-oscuro); font-weight:700; padding:1px 6px; border-radius:4px; font-size:0.95em; }
+  .hl-blue { background:rgba(18,53,91,0.1); color:var(--azul-oscuro); font-weight:700; padding:1px 6px; border-radius:4px; font-size:0.95em; }
+  .hl-gold { background:rgba(216,162,74,0.15); color:#7a5a1a; font-weight:700; padding:1px 6px; border-radius:4px; font-size:0.95em; }
+
+  /* ===== SCOPE VISUAL ===== */
+  .scope-visual { display:flex; flex-wrap:wrap; gap:12px; margin:18px 0; }
+  .scope-card {
+    flex:1; min-width:180px; border-radius:var(--radio);
+    padding:18px 20px; color:var(--blanco);
+  }
+  .scope-card.s1 { background:linear-gradient(135deg, #c0392b, #922b21); }
+  .scope-card.s2 { background:linear-gradient(135deg, #e67e22, #ca6f1e); }
+  .scope-card.s3 { background:linear-gradient(135deg, var(--azul-oscuro), var(--azul-medio)); }
+  .scope-card .scope-num { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; opacity:0.7; margin-bottom:6px; }
+  .scope-card .scope-title { font-size:16px; font-weight:800; margin-bottom:8px; }
+  .scope-card .scope-desc { font-size:12px; opacity:0.85; line-height:1.5; }
+
+  /* ===== GLOSARIO ===== */
+  .glosario-panel {
+    display:none; position:fixed; top:0; right:0; bottom:0;
+    width:380px; background:var(--blanco); box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+    z-index:1000; overflow-y:auto; flex-direction:column;
+  }
+  .glosario-panel.open { display:flex; }
+  .glosario-header {
+    background:var(--verde-oscuro); color:var(--blanco);
+    padding:20px 24px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:1;
+  }
+  .glosario-header h3 { font-size:16px; font-weight:800; }
+  .glosario-close { background:none; border:none; color:var(--blanco); font-size:22px; cursor:pointer; }
+  .glosario-body { padding:20px 24px; }
+  .glosario-item { border-bottom:1px solid var(--gris-medio); padding:14px 0; }
+  .glosario-item:last-child { border-bottom:none; }
+  .glosario-term { font-size:14px; font-weight:700; color:var(--verde-oscuro); margin-bottom:5px; }
+  .glosario-def { font-size:13px; color:var(--texto-secundario); line-height:1.6; }
+
+  /* ===== FORMULAS PANEL ===== */
+  .formulas-panel {
+    display:none; position:fixed; top:0; right:0; bottom:0;
+    width:440px; background:var(--blanco); box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+    z-index:1000; overflow-y:auto; flex-direction:column;
+  }
+  .formulas-panel.open { display:flex; }
+  .formulas-header {
+    background:var(--azul-oscuro); color:var(--blanco);
+    padding:20px 24px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:1;
+  }
+  .formulas-header h3 { font-size:16px; font-weight:800; }
+  .formulas-close { background:none; border:none; color:var(--blanco); font-size:22px; cursor:pointer; }
+  .formulas-body { padding:20px 24px; }
+  .formula-entry { margin-bottom:22px; }
+  .formula-entry .fe-name { font-size:14px; font-weight:700; color:var(--azul-oscuro); margin-bottom:6px; }
+  .formula-entry .fe-formula { background:var(--verde-oscuro); color:var(--blanco); font-family:'Courier New',monospace; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:6px; }
+  .formula-entry .fe-desc { font-size:12px; color:var(--texto-secundario); }
+
+  /* ===== OVERLAY ===== */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:999; }
+  .overlay.open { display:block; }
+
+  /* ===== MOBILE ===== */
+  .mobile-toggle {
+    display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    z-index:200; background:var(--verde-oscuro); color:var(--blanco);
+    border:none; font-family:inherit; font-size:13px; font-weight:700;
+    padding:12px 24px; border-radius:30px; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    gap:8px; align-items:center;
+  }
+  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99; }
+
+  /* ===== FINAL QUIZ ===== */
+  .quiz-final {
+    background:linear-gradient(135deg, #f8fffe, #f0f8f5);
+    border:2px solid var(--verde-medio);
+    border-radius:var(--radio-lg);
+    padding:32px;
+    margin:28px 0;
+  }
+  .quiz-final h3 { font-size:20px; font-weight:800; color:var(--verde-oscuro); margin-bottom:8px; }
+  .quiz-final .qf-desc { font-size:14px; color:var(--texto-secundario); margin-bottom:24px; }
+  .qf-score-display {
+    text-align:center; padding:32px; background:var(--blanco);
+    border-radius:var(--radio); box-shadow:var(--sombra); margin-top:24px;
+  }
+  .qf-score-num { font-size:64px; font-weight:900; color:var(--verde-oscuro); line-height:1; }
+  .qf-score-label { font-size:16px; color:var(--texto-secundario); margin-top:8px; }
+  .qf-badge { display:inline-block; margin-top:16px; padding:8px 24px; border-radius:30px; font-size:14px; font-weight:700; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { position:fixed; left:-280px; top:0; transition:left 0.3s; z-index:150; }
+    .sidebar.mobile-open { left:0; }
+    .mobile-toggle { display:flex; }
+    .sidebar-overlay { display:block; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+    .sidebar-overlay.visible { opacity:1; pointer-events:all; }
+    .module-header { padding:28px 24px 24px; }
+    .module-body { padding:24px 20px; }
+    .step-diagram { gap:6px; }
+    .step-arrow { display:none; }
+  }
+  @media (max-width: 600px) {
+    .hero { padding:40px 20px 36px; }
+    .hero-cards { gap:10px; }
+    .hero-card { min-width:120px; padding:12px 14px; }
+    .hero-card .hc-val { font-size:16px; }
+    .module-meta { gap:6px; }
+  }
+
+  /* Text helpers */
+  p { margin-bottom:12px; }
+  p:last-child { margin-bottom:0; }
+  ul, ol { padding-left:22px; margin-bottom:12px; }
+  li { margin-bottom:5px; font-size:14px; }
+  strong { color:var(--verde-oscuro); font-weight:700; }
+  em { color:var(--azul-oscuro); font-style:italic; }
+
+  .text-sm { font-size:13px; }
+  .text-muted { color:var(--texto-secundario); }
+  .mt-0 { margin-top:0; }
+  .spacer { height:20px; }
+
+  .divider { height:1px; background:var(--gris-medio); margin:28px 0; }
+
+  /* Scope 3 categories */
+  .cat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin:16px 0; }
+  .cat-item {
+    background:var(--blanco); border:1px solid var(--gris-medio);
+    border-radius:10px; padding:12px 16px;
+    display:flex; align-items:flex-start; gap:10px;
+  }
+  .cat-item.highlight { border-color:var(--verde-medio); background:#f0faf5; }
+  .cat-num { background:var(--verde-oscuro); color:var(--blanco); font-size:11px; font-weight:800; width:26px; height:26px; min-width:26px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .cat-item.highlight .cat-num { background:var(--verde-claro); }
+  .cat-text { font-size:13px; font-weight:600; color:var(--texto-principal); }
+  .cat-sub { font-size:11px; color:var(--texto-secundario); margin-top:2px; }
+
+  /* PACTA scenario visual */
+  .scenario-bar-wrap { margin:18px 0; }
+  .scenario-bar-item { margin-bottom:14px; }
+  .scenario-bar-label { display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:5px; }
+  .scenario-bar-track { background:var(--gris-medio); border-radius:4px; height:12px; overflow:hidden; position:relative; }
+  .scenario-bar-fill { height:100%; border-radius:4px; transition:width 1s ease; }
+  .bar-coal { background:linear-gradient(90deg, #7f8c8d, #555); }
+  .bar-gas { background:linear-gradient(90deg, #e67e22, #ca6f1e); }
+  .bar-renew { background:linear-gradient(90deg, var(--verde-claro), var(--verde-medio)); }
+  .bar-target { position:absolute; top:0; bottom:0; width:2px; background:var(--rojo-alerta); }
+  .scenario-legend { display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:var(--texto-secundario); }
+  .legend-dot { width:10px; height:10px; border-radius:50%; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🌱 Sustainable Finance · Formación Corporativa</div>
+  <h1>Huella Financiada y<br><span>Emisiones Financiadas</span></h1>
+  <p>Formación interactiva para entender cómo los bancos miden y gestionan las emisiones asociadas a sus carteras de inversión y financiación.</p>
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hc-label">Contenido</div>
+      <div class="hc-val">6 módulos</div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-label">Nivel</div>
+      <div class="hc-val">Básico</div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-label">Público</div>
+      <div class="hc-val">Corporativo</div>
+    </div>
+    <div class="hero-card">
+      <div class="hc-label">Marcos</div>
+      <div class="hc-val">PCAF · PACTA · GHG Protocol · SBTi</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">📋 Módulos del curso</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Progreso</span>
+        <strong id="progress-pct">0%</strong>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <ul class="nav-list" id="nav-list">
+      <li class="nav-item">
+        <button class="nav-btn active" data-module="0" onclick="goToModule(0)">
+          <span class="nav-num">0</span>
+          <span>Fundamentos: GEI y Clima</span>
+          <span class="nav-check" id="check-0" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="1" onclick="goToModule(1)">
+          <span class="nav-num">1</span>
+          <span>Huella Financiada</span>
+          <span class="nav-check" id="check-1" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="2" onclick="goToModule(2)">
+          <span class="nav-num">2</span>
+          <span>Capital y Deuda</span>
+          <span class="nav-check" id="check-2" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="3" onclick="goToModule(3)">
+          <span class="nav-num">3</span>
+          <span>Project Finance</span>
+          <span class="nav-check" id="check-3" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="4" onclick="goToModule(4)">
+          <span class="nav-num">4</span>
+          <span>Otras Clases de Activo</span>
+          <span class="nav-check" id="check-4" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="5" onclick="goToModule(5)">
+          <span class="nav-num">5</span>
+          <span>PACTA: Alineación</span>
+          <span class="nav-check" id="check-5" style="display:none">✔</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" data-module="6" onclick="goToModule(6)">
+          <span class="nav-num">🏆</span>
+          <span>Evaluación Final</span>
+          <span class="nav-check" id="check-6" style="display:none">✔</span>
+        </button>
+      </li>
+    </ul>
+    <div class="sidebar-tools">
+      <button class="sidebar-tool-btn" onclick="openGlosario()">📖 Glosario de términos</button>
+      <button class="sidebar-tool-btn" onclick="openFormulas()">🔢 Hoja de fórmulas</button>
+      <button class="sidebar-tool-btn" onclick="resetProgress()">🔄 Reiniciar progreso</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content" id="main-content">
+
+    <!-- ========================= MODULE 0 ========================= -->
+    <div class="module-page active" id="module-0">
+      <div class="module-header">
+        <div class="module-badge">📗 Módulo 0</div>
+        <h2>Fundamentos: Emisiones y Cambio Climático</h2>
+        <p>Antes de entender cómo los bancos miden su huella climática, necesitamos entender qué son los gases de efecto invernadero, cómo se clasifican las emisiones y qué papel juega el sector financiero en la transición energética.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">🌍 Contexto climático</span>
+          <span class="module-meta-badge">📏 GHG Protocol</span>
+          <span class="module-meta-badge">🏦 Rol de la banca</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Entender qué son los Gases de Efecto Invernadero (GEI) y de dónde provienen.</li>
+            <li>Comprender por qué el cambio climático es urgente y qué riesgos genera para las instituciones financieras.</li>
+            <li>Conocer el Acuerdo de París y sus implicaciones para la banca.</li>
+            <li>Distinguir los tres alcances de emisiones (Scope 1, 2 y 3).</li>
+            <li>Situar las emisiones financiadas como categoría dentro del Alcance 3.</li>
+          </ul>
+        </div>
+
+        <!-- 0.1 -->
+        <div class="section-title"><span class="s-num">0.1</span> Qué son los Gases de Efecto Invernadero (GEI)</div>
+        <p>Imaginemos la atmósfera terrestre como el cristal de un invernadero. Los rayos del sol entran fácilmente, pero parte del calor que refleja la Tierra queda atrapado por ciertos gases. Este fenómeno —completamente natural— es lo que ha permitido que la Tierra tenga una temperatura media de unos 15 °C en lugar de −18 °C. Sin él, la vida tal como la conocemos no existiría.</p>
+        <p>El problema surge cuando la actividad humana aumenta artificialmente la concentración de estos gases en la atmósfera, intensificando el efecto invernadero y calentando el planeta más rápido de lo que los ecosistemas pueden adaptarse. A este fenómeno se le llama <strong>calentamiento antropogénico</strong> (de origen humano).</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Concepto clave</div>
+          <h4>¿Qué es el CO₂ equivalente (CO₂e)?</h4>
+          <p>Distintos gases tienen distintas capacidades de calentar la atmósfera. Para poder sumarlos y compararlos, se usa una unidad común: el <strong>CO₂ equivalente (CO₂e)</strong>. Si el metano calienta 28 veces más que el CO₂ a lo largo de 100 años, entonces 1 tonelada de metano = 28 toneladas de CO₂e. Así podemos hablar de "100 millones de toneladas de CO₂e" como un número total que engloba todos los gases.</p>
+        </div>
+
+        <p>El <strong>Potencial de Calentamiento Global (PCG o GWP, del inglés Global Warming Potential)</strong> es el indicador que mide cuánto calienta un gas con respecto al CO₂ en un horizonte de 100 años.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Gas</th><th>Fórmula</th><th>Fuente principal</th><th>GWP (100 años)</th><th>Comentario</th></tr></thead>
+            <tbody>
+              <tr><td>Dióxido de carbono</td><td class="td-formula">CO₂</td><td>Quema de combustibles fósiles, deforestación</td><td>1</td><td>Gas de referencia. El más abundante.</td></tr>
+              <tr><td>Metano</td><td class="td-formula">CH₄</td><td>Ganadería, pozos de gas, vertederos</td><td>27–30</td><td>Menos abundante pero mucho más potente a corto plazo.</td></tr>
+              <tr><td>Óxido nitroso</td><td class="td-formula">N₂O</td><td>Fertilizantes, combustión, industria química</td><td>273</td><td>Importante en el sector agrícola.</td></tr>
+              <tr><td>Hidrofluorocarburos</td><td class="td-formula">HFCs</td><td>Refrigeración, aire acondicionado</td><td>Hasta 14.800</td><td>Sustituyeron a los CFCs pero siguen siendo problemáticos.</td></tr>
+              <tr><td>Perfluorocarburos</td><td class="td-formula">PFCs</td><td>Industria del aluminio, semiconductores</td><td>Hasta 12.200</td><td>Muy persistentes en la atmósfera.</td></tr>
+              <tr><td>Hexafluoruro de azufre</td><td class="td-formula">SF₆</td><td>Equipos eléctricos de alta tensión</td><td>25.200</td><td>El GEI más potente incluido en el protocolo de Kioto.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 0.2 -->
+        <div class="section-title"><span class="s-num">0.2</span> Fuentes de emisiones</div>
+        <p>Las emisiones de GEI provienen de múltiples sectores económicos. Conocerlos es esencial para un banco, porque estos sectores son precisamente los clientes a los que financia.</p>
+
+        <div class="card-grid">
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">⚡</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Energía y electricidad</div>
+            <div class="text-sm text-muted">Quema de carbón, petróleo y gas para generar electricidad y calor. El mayor sector emisor a nivel global (~35% del total).</div>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">🏭</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Industria</div>
+            <div class="text-sm text-muted">Cemento, acero, química, aluminio. Incluye emisiones energéticas (calor para procesos) y de proceso (reacciones químicas que liberan CO₂).</div>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">🚗</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Transporte</div>
+            <div class="text-sm text-muted">Automóviles, camiones, aviación, barcos. Depende casi totalmente de combustibles fósiles. Sector clave en la transición.</div>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">🌾</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Agricultura y suelo</div>
+            <div class="text-sm text-muted">Ganadería (metano), fertilizantes (N₂O), deforestación. Muy difícil de descarbonizar por su naturaleza biológica.</div>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">🏢</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Edificios</div>
+            <div class="text-sm text-muted">Calefacción, refrigeración, agua caliente sanitaria. Gran potencial de mejora mediante eficiencia energética y electrificación.</div>
+          </div>
+          <div class="card" style="padding:18px 20px;">
+            <div style="font-size:24px;margin-bottom:8px;">🗑️</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:5px;">Residuos</div>
+            <div class="text-sm text-muted">Metano de vertederos, tratamiento de aguas residuales. Menor peso relativo pero no despreciable.</div>
+          </div>
+        </div>
+
+        <div class="card-alerta">
+          <div class="card-tag">⚠️ Relevancia para bancos</div>
+          <p>Estos sectores no son ajenos a la banca. Un banco que financia centrales eléctricas de carbón, compañías automovilísticas o acereras está indirectamente vinculado a sus emisiones. Por eso, entender el perfil emisor de cada sector es fundamental para gestionar la huella financiada.</p>
+        </div>
+
+        <!-- 0.3 -->
+        <div class="section-title"><span class="s-num">0.3</span> Consecuencias del cambio climático y urgencia</div>
+        <p>El cambio climático no es solo un problema ambiental: es un <strong>riesgo financiero de primer orden</strong>. Los reguladores bancarios así lo reconocen. En PCAF y en los marcos de reporting, se habla de dos grandes familias de riesgo:</p>
+
+        <div class="card-grid">
+          <div class="card" style="border-top:4px solid var(--rojo-alerta);padding:20px 24px;">
+            <div style="font-weight:700;color:var(--rojo-alerta);font-size:15px;margin-bottom:10px;">🌊 Riesgo Físico</div>
+            <p class="text-sm"><strong>Agudo:</strong> eventos extremos puntuales (huracanes, inundaciones, incendios). Pueden destruir activos físicos de los prestatarios del banco.<br><br><strong>Crónico:</strong> cambios graduales y permanentes (subida del nivel del mar, aumento de temperaturas, desertización). Afectan el valor a largo plazo de inmuebles y activos.</p>
+          </div>
+          <div class="card" style="border-top:4px solid var(--dorado);padding:20px 24px;">
+            <div style="font-weight:700;color:#8a5a00;font-size:15px;margin-bottom:10px;">🔀 Riesgo de Transición</div>
+            <p class="text-sm"><strong>Regulatorio:</strong> nuevas normativas (precios del carbono, prohibición de vehículos de combustión).<br><strong>Tecnológico:</strong> disrupción de tecnologías limpias que hace obsoletas las contaminantes.<br><strong>De mercado:</strong> cambio en preferencias de consumidores e inversores.<br><strong>Reputacional:</strong> asociación con sectores "sucios".<br><strong>Legal:</strong> litigios climáticos contra empresas y sus financiadores.</p>
+          </div>
+        </div>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Conceptos clave</div>
+          <h4>Stranded Assets y Carbon Lock-in</h4>
+          <p><strong>Stranded assets</strong> (activos varados): activos que pierden su valor antes de lo esperado debido a la transición energética. Ejemplo: una central de carbón financiada a 30 años que el regulador obliga a cerrar en 10.<br><br><strong>Carbon lock-in</strong>: cuando la infraestructura construida (central, fábrica, flota) "encadena" al usuario a seguir emitiendo durante décadas, aunque quiera cambiar.<br><br><strong>Repricing de activos</strong>: la revalorización (a la baja) de activos intensivos en carbono cuando el mercado internaliza el riesgo climático.</p>
+        </div>
+
+        <!-- 0.4 -->
+        <div class="section-title"><span class="s-num">0.4</span> El Acuerdo de París</div>
+        <p>En diciembre de 2015, en la <strong>COP21</strong> (21.ª Conferencia de las Partes de la CMNUCC), 196 países firmaron el Acuerdo de París. Sus objetivos son:</p>
+        <ul>
+          <li>Limitar el aumento de la temperatura global a <strong>bien por debajo de 2 °C</strong> respecto a los niveles preindustriales.</li>
+          <li>Perseguir esfuerzos para limitarlo a <strong>1,5 °C</strong>.</li>
+          <li>Aumentar la resiliencia climática y alinear los flujos financieros con estos objetivos.</li>
+        </ul>
+
+        <div class="card-grid">
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">📊 Carbon Budget</div>
+            <p class="text-sm">El presupuesto de carbono es la cantidad total de CO₂ que la humanidad puede emitir para mantenerse dentro de un objetivo de temperatura. Para 1,5 °C, ese presupuesto es limitado y se agota a ritmo acelerado.</p>
+          </div>
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">🎯 Net Zero</div>
+            <p class="text-sm">Equilibrio entre las emisiones que se producen y las que se eliminan o absorben. <strong>No significa cero emisiones absolutas</strong>, sino que las emisiones residuales se compensan con absorciones netas (bosques, tecnología CCS).</p>
+          </div>
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">🗺️ NDCs</div>
+            <p class="text-sm">Las <strong>Contribuciones Determinadas a Nivel Nacional</strong> son los compromisos climáticos que cada país actualiza periódicamente. Definen la ambición climática de cada economía.</p>
+          </div>
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">📖 Artículo 2.1(c)</div>
+            <p class="text-sm">Este artículo del Acuerdo de París exige que los flujos financieros sean <strong>consistentes con una vía de desarrollo bajo en emisiones y resiliente al clima</strong>. Es la base legal que obliga a la banca a alinear sus carteras.</p>
+          </div>
+        </div>
+
+        <!-- 0.5 -->
+        <div class="section-title"><span class="s-num">0.5</span> El Rol del Sector Financiero</div>
+        <p>Para entender por qué los bancos deben preocuparse por las emisiones, primero hay que entender qué hace un banco.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Analogía sencilla</div>
+          <h4>¿Qué hace un banco?</h4>
+          <p>Piensa en un banco como un <strong>canal de agua</strong>. Los ahorradores depositan agua (dinero) y el banco la dirige hacia donde cree que tendrá más valor: empresas que quieren crecer, personas que quieren comprar una casa, proyectos de infraestructura. A cambio, cobra un precio por ese servicio (intereses). Ese "riego" es lo que llamamos <strong>asignación de capital</strong>: el banco decide quién recibe financiación y en qué condiciones.</p>
+        </div>
+
+        <p>En este contexto, algunos términos clave:</p>
+        <ul>
+          <li><strong>Cartera:</strong> el conjunto de todos los préstamos, inversiones y operaciones financieras que tiene el banco. Como una cesta con muchos tipos de frutas.</li>
+          <li><strong>Exposición:</strong> la cantidad de dinero que el banco tiene "en juego" con un cliente o sector concreto.</li>
+          <li><strong>Financiación de transición:</strong> dinero que se dirige a empresas o proyectos que están transformando su modelo para emitir menos.</li>
+          <li><strong>Greenwashing:</strong> hacer parecer que una actividad es verde cuando en realidad no lo es, o no lo suficiente. Un riesgo reputacional y regulatorio creciente.</li>
+        </ul>
+
+        <div class="card-alerta">
+          <div class="card-tag">⚠️ Financiación verde ≠ Descarbonización de cartera</div>
+          <p>Un banco puede tener 1.000 M€ en bonos verdes (financiación verde) y al mismo tiempo 50.000 M€ financiando empresas muy intensivas en carbono. La financiación verde es una parte de la solución, pero no equivale a tener una cartera alineada con el Acuerdo de París.</p>
+        </div>
+
+        <!-- 0.6 -->
+        <div class="section-title"><span class="s-num">0.6</span> Herramientas y marcos para bancos</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Marco</th><th>Qué hace</th><th>Obligatorio / Voluntario</th></tr></thead>
+            <tbody>
+              <tr><td>GHG Protocol</td><td>Establece la metodología contable base para clasificar y medir emisiones en Scopes 1, 2 y 3</td><td>Referencia estándar global</td></tr>
+              <tr><td>PCAF</td><td>Metodología específica para medir emisiones financiadas de instituciones financieras (Scope 3 Cat. 15)</td><td>Voluntario, creciente adopción regulatoria</td></tr>
+              <tr><td>PACTA</td><td>Mide la alineación de carteras con escenarios climáticos por sectores y tecnologías</td><td>Voluntario</td></tr>
+              <tr><td>SBTi (Science-Based Targets)</td><td>Define objetivos de reducción de emisiones basados en la ciencia climática</td><td>Voluntario, pero muy demandado</td></tr>
+              <tr><td>TCFD</td><td>Marco de divulgación de riesgos climáticos financieros (físicos y de transición)</td><td>Obligatorio en muchas jurisdicciones</td></tr>
+              <tr><td>ISSB / IFRS S2</td><td>Norma de reporting climático de la ISSB para inversores internacionales</td><td>Obligatorio o referencia en muchos países</td></tr>
+              <tr><td>ESRS E1</td><td>Norma climática de la CSRD para empresas europeas (incluidos bancos grandes)</td><td>Obligatorio en la UE (grandes empresas)</td></tr>
+              <tr><td>BCE / EBA</td><td>Supervisión bancaria: expectativas sobre gestión de riesgos climáticos y publicación de datos</td><td>Obligatorio (Pilar 2 y Pilar 3 ESG)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Cómo se complementan</div>
+          <h4>El ecosistema de marcos climáticos</h4>
+          <p><strong>GHG Protocol</strong> clasifica y establece las bases → <strong>PCAF</strong> mide las emisiones financiadas → <strong>PACTA</strong> evalúa el alineamiento con escenarios → <strong>SBTi</strong> fija objetivos de reducción basados en ciencia → <strong>TCFD / ISSB / ESRS</strong> estructuran la divulgación al mercado.</p>
+        </div>
+
+        <!-- 0.7 -->
+        <div class="section-title"><span class="s-num">0.7</span> Clasificación: Alcance 1, 2 y 3</div>
+        <p>El GHG Protocol organiza las emisiones en tres "alcances" o "scopes". Sirve para que cada empresa sea responsable de las emisiones que controla directamente y también de las que genera de forma indirecta.</p>
+
+        <div class="scope-visual">
+          <div class="scope-card s1">
+            <div class="scope-num">Alcance 1 / Scope 1</div>
+            <div class="scope-title">Emisiones directas</div>
+            <div class="scope-desc">Las que ocurren físicamente dentro de las instalaciones o activos de la organización. Calderas, flotas de vehículos propios, gases refrigerantes, procesos industriales internos.</div>
+          </div>
+          <div class="scope-card s2">
+            <div class="scope-num">Alcance 2 / Scope 2</div>
+            <div class="scope-title">Energía comprada</div>
+            <div class="scope-desc">Las emisiones asociadas a la electricidad, calor o vapor que la empresa compra a terceros. Aunque las emite la central eléctrica, se atribuyen a quien consume la energía.</div>
+          </div>
+          <div class="scope-card s3">
+            <div class="scope-num">Alcance 3 / Scope 3</div>
+            <div class="scope-title">Cadena de valor</div>
+            <div class="scope-desc">Todas las demás emisiones indirectas: materias primas compradas, transporte de productos, viajes de empleados, y — para los bancos — las emisiones de las empresas financiadas.</div>
+          </div>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Ejemplo</div>
+          <h4>Un banco vs. una fábrica de coches</h4>
+          <p><strong>Fábrica de coches:</strong> Scope 1 = emisiones de sus hornos y maquinaria. Scope 2 = electricidad consumida en la planta. Scope 3 upstream = acero y aluminio comprado. Scope 3 downstream = emisiones de los coches vendidos mientras los usan sus propietarios.</p>
+          <p style="margin-top:10px;"><strong>Banco:</strong> Scope 1 = generadores de emergencia en sus edificios. Scope 2 = electricidad de sus oficinas. Scope 3 = emisiones de todas las empresas, hipotecas, préstamos y proyectos que financia. Este último es, con enorme diferencia, el mayor origen de emisiones de un banco.</p>
+        </div>
+
+        <p>En el <strong>Scope 2</strong> existen dos enfoques:</p>
+        <ul>
+          <li><strong>Location-based:</strong> usa el factor de emisión medio de la red eléctrica del país. Más fácil pero menos preciso.</li>
+          <li><strong>Market-based:</strong> refleja la electricidad que la empresa compra específicamente (ej. contratos de energía renovable, garantías de origen). Más preciso y alineado con compromisos de energía verde.</li>
+        </ul>
+
+        <!-- 0.8 -->
+        <div class="section-title"><span class="s-num">0.8</span> Las 15 Categorías del Alcance 3</div>
+        <p>El Scope 3 está dividido en 15 categorías, agrupadas en actividades "upstream" (antes de la empresa) y "downstream" (después de la empresa). Para los bancos, la categoría más relevante es la número 15.</p>
+
+        <div class="cat-grid">
+          <div class="cat-item"><div class="cat-num">1</div><div><div class="cat-text">Bienes y servicios comprados</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">2</div><div><div class="cat-text">Bienes de capital</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">3</div><div><div class="cat-text">Energía y combustibles (no incluidos en S1/S2)</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">4</div><div><div class="cat-text">Transporte y distribución upstream</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">5</div><div><div class="cat-text">Residuos generados</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">6</div><div><div class="cat-text">Viajes de negocios</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">7</div><div><div class="cat-text">Desplazamientos de empleados</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">8</div><div><div class="cat-text">Activos arrendados upstream</div><div class="cat-sub">Upstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">9</div><div><div class="cat-text">Transporte y distribución downstream</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">10</div><div><div class="cat-text">Procesamiento de productos vendidos</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">11</div><div><div class="cat-text">Uso de productos vendidos</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">12</div><div><div class="cat-text">Tratamiento al final de vida</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">13</div><div><div class="cat-text">Activos arrendados downstream</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item"><div class="cat-num">14</div><div><div class="cat-text">Franquicias</div><div class="cat-sub">Downstream</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">15</div><div><div class="cat-text">Inversiones (Investments)</div><div class="cat-sub">⭐ Clave para bancos</div></div></div>
+        </div>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Por qué la categoría 15 es la clave para bancos</div>
+          <h4>Category 15: Investments</h4>
+          <p>La categoría 15 del Scope 3 recoge las emisiones de las actividades financiadas o invertidas por la organización. Para un banco, esto representa habitualmente más del <strong>95-99%</strong> de su huella de carbono total. Sus propias emisiones operacionales (las de sus edificios y empleados) son marginales en comparación. Por eso, cuando hablamos de descarbonizar un banco, hablamos de descarbonizar su cartera de inversiones y crédito.</p>
+        </div>
+
+        <!-- 0.9 -->
+        <div class="section-title"><span class="s-num">0.9</span> Emisiones Financiadas como Categoría del Alcance 3</div>
+        <p>Las <strong>emisiones financiadas</strong> son la parte de las emisiones de GEI de una empresa o proyecto que se atribuye proporcionalmente a quienes la financian o invierten en ella. Si un banco ha prestado el 1% del valor total de una empresa, es "responsable" (en términos de inventario) del 1% de sus emisiones.</p>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Analogía</div>
+          <h4>Propietario vs. responsable</h4>
+          <p>Si tres amigos se compran un coche juntos al 50%-30%-20%, y ese coche emite 5 tCO₂e al año, la huella atribuida a cada uno sería 2,5 / 1,5 / 1,0 tCO₂e respectivamente. No significa que sean "culpables" de contaminar, sino que contablemente se les atribuye una parte proporcional. Esto es la lógica de atribución en PCAF.</p>
+        </div>
+
+        <p>Es importante diferenciar:</p>
+        <ul>
+          <li><strong>Financed emissions:</strong> emisiones de actividades que el banco financia directamente (préstamos, acciones).</li>
+          <li><strong>Facilitated emissions:</strong> emisiones de actividades habilitadas por el banco como intermediario (emisión de bonos, asesoramiento en fusiones). No siempre se incluyen en el inventario principal; PCAF trabaja en su metodología.</li>
+        </ul>
+
+        <!-- Mini-quiz M0 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 0</h3>
+          <div class="quiz-subtitle">Responde para comprobar tu comprensión. Recibirás feedback inmediato.</div>
+
+          <div class="quiz-question" id="q0-1">
+            <p>1. ¿Cuál de los siguientes gases tiene el mayor Potencial de Calentamiento Global (GWP) a 100 años?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q0-1',this,false,'El CO₂ es el gas de referencia, con GWP = 1. Es el más abundante, pero no el más potente.')"><span class="opt-letter">A</span> CO₂</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-1',this,false,'El CH₄ tiene un GWP de 27-30, mucho mayor que CO₂, pero no es el más alto de la lista.')"><span class="opt-letter">B</span> Metano (CH₄)</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-1',this,true,'¡Correcto! El SF₆ tiene un GWP de 25.200, lo que lo convierte en el GEI más potente incluido en el protocolo de Kioto.')"><span class="opt-letter">C</span> Hexafluoruro de azufre (SF₆)</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-1',this,false,'El N₂O tiene un GWP de 273, muy alto, pero el SF₆ lo supera con creces.')"><span class="opt-letter">D</span> Óxido nitroso (N₂O)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q0-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q0-2">
+            <p>2. Para un banco, ¿en qué Alcance (Scope) se incluyen las emisiones de las empresas que financia?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q0-2',this,false,'El Scope 1 son las emisiones directas propias del banco (calderas, generadores). No incluye a sus clientes.')"><span class="opt-letter">A</span> Alcance 1 (Scope 1)</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-2',this,false,'El Scope 2 recoge la electricidad que el banco compra. No incluye a sus clientes financiados.')"><span class="opt-letter">B</span> Alcance 2 (Scope 2)</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-2',this,true,'¡Correcto! Las emisiones de los clientes financiados se recogen en el Scope 3, concretamente en la Categoría 15 (Inversiones), que es la más relevante para los bancos.')"><span class="opt-letter">C</span> Alcance 3 (Scope 3)</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-2',this,false,'No existe un Alcance 4 en el GHG Protocol.')"><span class="opt-letter">D</span> Alcance 4 (Scope 4)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q0-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q0-3">
+            <p>3. El artículo 2.1(c) del Acuerdo de París exige que los flujos financieros sean consistentes con...</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q0-3',this,false,'El Acuerdo de París no pide maximizar rentabilidad, aunque la transición puede ser una oportunidad.')"><span class="opt-letter">A</span> Maximizar la rentabilidad de las inversiones financieras</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-3',this,true,'¡Correcto! El artículo 2.1(c) pide que los flujos de capital se dirijan hacia una vía de desarrollo bajo en emisiones y resiliente al clima, vinculando directamente al sector financiero con los objetivos climáticos.')"><span class="opt-letter">B</span> Una vía de desarrollo bajo en emisiones y resiliente al clima</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-3',this,false,'El Acuerdo de París no hace referencia a impuestos corporativos.')"><span class="opt-letter">C</span> El pago de impuestos corporativos en cada país</div>
+              <div class="quiz-option" onclick="answerQuiz('q0-3',this,false,'Aunque los fondos de pensiones son relevantes, el artículo 2.1(c) habla de todos los flujos financieros, no solo de los fondos de pensiones.')"><span class="opt-letter">D</span> La gestión de fondos de pensiones verdes</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q0-3"></div>
+          </div>
+        </div>
+
+        <!-- Mensajes Clave M0 -->
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 0</h3>
+          <ul class="mensajes-list">
+            <li>Los GEI se miden en CO₂ equivalente (CO₂e) usando el GWP como factor de conversión.</li>
+            <li>El cambio climático genera riesgos financieros reales: físicos (daños a activos) y de transición (stranded assets, repricing).</li>
+            <li>El Acuerdo de París obliga jurídicamente a los flujos financieros a alinearse con la descarbonización (art. 2.1c).</li>
+            <li>Para un banco, más del 95% de su huella de carbono proviene del Scope 3 Categoría 15: las emisiones de sus clientes financiados.</li>
+            <li>GHG Protocol clasifica; PCAF mide; PACTA alinea; SBTi fija objetivos; TCFD/ISSB/ESRS reportan.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(-1)" disabled>← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(0)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(1)">Siguiente: Huella Financiada →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODULE 1 ========================= -->
+    <div class="module-page" id="module-1">
+      <div class="module-header">
+        <div class="module-badge">📘 Módulo 1</div>
+        <h2>Introducción a la Huella Financiada</h2>
+        <p>¿Qué son exactamente las emisiones financiadas? ¿Por qué los bancos deben medirlas? ¿Qué es PCAF y cómo funciona? En este módulo establecemos la base metodológica del resto del curso.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">🏦 PCAF</span>
+          <span class="module-meta-badge">📊 Calidad del dato</span>
+          <span class="module-meta-badge">📋 Clases de activos</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Entender con precisión qué son las emisiones financiadas y qué no lo son.</li>
+            <li>Conocer el marco PCAF y su origen.</li>
+            <li>Identificar las clases de activos relevantes para un banco.</li>
+            <li>Comprender la escala de calidad del dato y la incertidumbre metodológica.</li>
+          </ul>
+        </div>
+
+        <!-- 1.1 -->
+        <div class="section-title"><span class="s-num">1.1</span> Qué son las Emisiones Financiadas</div>
+        <p>Las <strong>emisiones financiadas</strong> son las emisiones de GEI que se atribuyen proporcionalmente a una institución financiera en función de su participación en la financiación de actividades económicas emisoras.</p>
+        <p>Dicho de forma más sencilla: si un banco presta dinero a una empresa que emite CO₂, una parte de esas emisiones se le "asigna" al banco, en proporción a cuánto representa su préstamo respecto al valor total de esa empresa.</p>
+
+        <div class="card-grid">
+          <div class="card" style="padding:18px 20px; border-top:3px solid var(--verde-medio);">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">🏭 Emisiones operacionales</div>
+            <p class="text-sm">Las que genera la propia empresa en sus operaciones: Scope 1, 2 y el Scope 3 de su cadena de valor. Son las emisiones del cliente, no del banco.</p>
+          </div>
+          <div class="card" style="padding:18px 20px; border-top:3px solid var(--azul-medio);">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">💰 Emisiones financiadas</div>
+            <p class="text-sm">La parte de las emisiones operacionales del cliente que se atribuye al banco en función de su participación financiera. Scope 3 Cat. 15 del banco.</p>
+          </div>
+          <div class="card" style="padding:18px 20px; border-top:3px solid var(--dorado);">
+            <div style="font-weight:700;color:#7a5a00;margin-bottom:6px;">🌿 Emisiones evitadas</div>
+            <p class="text-sm">Emisiones que no ocurren gracias a una actividad (ej. un parque eólico que desplaza a una central de carbón). Se reportan por separado, nunca se restan de las emisiones financiadas.</p>
+          </div>
+          <div class="card" style="padding:18px 20px; border-top:3px solid #27ae60;">
+            <div style="font-weight:700;color:#1a5e35;margin-bottom:6px;">🌲 Removals / Eliminaciones</div>
+            <p class="text-sm">Captura activa de CO₂ de la atmósfera (bosques, CCS, DAC). Son conceptualmente distintas de las emisiones evitadas y tienen su propia metodología.</p>
+          </div>
+        </div>
+
+        <div class="card-error">
+          <div class="card-tag">❌ Error común</div>
+          <p>Mezclar estos cuatro conceptos es uno de los errores más frecuentes y graves. Las emisiones evitadas o las eliminaciones de carbono <strong>no pueden restarse de las emisiones financiadas</strong> para obtener una cifra neta. Deben reportarse siempre de forma separada y transparente.</p>
+        </div>
+
+        <!-- 1.2 -->
+        <div class="section-title"><span class="s-num">1.2</span> Por Qué los Bancos Deben Medirlas</div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">📋 Razón 1: Regulación <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>La presión regulatoria es creciente e irreversible:</p>
+            <ul>
+              <li><strong>Banco Central Europeo (BCE):</strong> desde 2022 exige a los bancos gestionar el riesgo climático como cualquier otro riesgo financiero. Los supervisores evalúan si los bancos tienen estrategias climáticas adecuadas.</li>
+              <li><strong>EBA (Autoridad Bancaria Europea):</strong> guías sobre gestión de riesgos ESG e integración en el ICAAP (proceso de evaluación interna del capital).</li>
+              <li><strong>CSRD (Directiva de Reporting de Sostenibilidad Corporativa):</strong> obliga a grandes empresas europeas (incluidos bancos) a publicar información de doble materialidad, incluyendo huella financiada.</li>
+              <li><strong>Pilar 3 ESG:</strong> disclosures cuantitativos sobre exposición a riesgos climáticos y métricas de alineamiento.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">📊 Razón 2: Mercado e inversores <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>Los inversores institucionales (fondos de pensiones, gestoras de activos) evalúan cada vez más la huella climática de los bancos en los que invierten. Las agencias de rating ESG (MSCI, Sustainalytics, S&P CSA) penalizan a los bancos sin datos creíbles de emisiones financiadas. Los grandes clientes corporativos también empiezan a exigir a sus bancos compromisos climáticos.</p>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">🎯 Razón 3: Riesgo y estrategia <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>Medir las emisiones financiadas no es solo un ejercicio de reporting: es la base para gestionar el riesgo climático. Un banco con alta concentración en sectores intensivos en carbono (petróleo, cemento, aviación) está más expuesto al riesgo de transición. Sin medir, no puede gestionar. La medición es también el punto de partida para fijarse objetivos sectoriales y comprometerse con Net Zero a través de alianzas como la Net-Zero Banking Alliance (NZBA).</p>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">🌍 Razón 4: Reputación <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>La sociedad y los medios de comunicación prestan cada vez más atención al rol de los bancos en el cambio climático. Las campañas de organizaciones como BankTrack publican rankings de bancos por financiación de combustibles fósiles. No publicar datos de huella financiada genera desconfianza y sospecha de greenwashing. La transparencia, aunque muestre una huella alta, es más valorada que el silencio.</p>
+          </div>
+        </div>
+
+        <!-- 1.3 -->
+        <div class="section-title"><span class="s-num">1.3</span> Qué es PCAF y Cómo Surgió</div>
+        <p>El <strong>Partnership for Carbon Accounting Financials (PCAF)</strong> es una iniciativa de la industria financiera que desarrolla y promueve una metodología estándar y abierta para medir y divulgar las emisiones de GEI asociadas a préstamos e inversiones.</p>
+        <p>Nació en 2015 en los <strong>Países Bajos</strong>, cuando un grupo de bancos holandeses (ASN Bank, Triodos, etc.) decidieron que necesitaban un método común para medir sus emisiones financiadas. En 2019, se expandió a América del Norte y en 2020 se convirtió en una iniciativa global, alineada con el GHG Protocol.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Por qué PCAF existe</div>
+          <h4>PCAF complementa al GHG Protocol</h4>
+          <p>El GHG Protocol (el estándar global para inventarios de emisiones corporativas) identifica la Categoría 15 del Scope 3 (Inversiones) como relevante para instituciones financieras, pero no especifica cómo calcularla en detalle. PCAF llena ese vacío: proporciona las fórmulas, los factores de atribución y la jerarquía de datos para cada tipo de activo financiero. Sin PCAF, cada banco inventaría sus emisiones financiadas de forma diferente, haciendo imposible la comparabilidad.</p>
+        </div>
+
+        <!-- 1.4 -->
+        <div class="section-title"><span class="s-num">1.4</span> El Estándar PCAF de Emisiones Financiadas</div>
+        <p>El estándar PCAF está organizado en torno a varios conceptos clave:</p>
+        <ul>
+          <li><strong>Asset classes (clases de activos):</strong> el estándar cubre diferentes tipos de activos financieros (préstamos a empresas, acciones, hipotecas, proyectos, etc.) con metodologías adaptadas a cada uno.</li>
+          <li><strong>Attribution factor (factor de atribución):</strong> el porcentaje de las emisiones del cliente que se asigna al banco, calculado como la proporción de su financiación sobre el valor total de la empresa o proyecto.</li>
+          <li><strong>Data hierarchy (jerarquía de datos):</strong> sistema para priorizar los datos más precisos cuando hay múltiples fuentes disponibles.</li>
+          <li><strong>Avoided emissions (emisiones evitadas):</strong> metodología separada para reportar las emisiones que no ocurren gracias a activos financiados (energías renovables, eficiencia energética).</li>
+          <li><strong>Uncertainty (incertidumbre):</strong> PCAF reconoce que los datos son imperfectos y pide que se reporte la calidad del dato.</li>
+        </ul>
+
+        <!-- 1.5 -->
+        <div class="section-title"><span class="s-num">1.5</span> Clases de Activos Incluidas</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Grupo</th><th>Clase de activo</th><th>Ejemplo sencillo</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="4">💼 Corporativo</td><td>Listed equity (acciones cotizadas)</td><td>El banco compra acciones de Iberdrola en bolsa</td></tr>
+              <tr><td>Corporate bonds (bonos corporativos)</td><td>El banco compra un bono emitido por Repsol</td></tr>
+              <tr><td>Business loans (préstamos a empresas)</td><td>El banco presta 50 M€ a una cementera</td></tr>
+              <tr><td>Unlisted equity (capital no cotizado)</td><td>El banco tiene participación en una startup de hidrógeno verde</td></tr>
+              <tr><td rowspan="2">🏢 Inmuebles</td><td>Commercial real estate</td><td>Préstamo para un edificio de oficinas</td></tr>
+              <tr><td>Mortgages (hipotecas)</td><td>Hipoteca para la compra de una vivienda</td></tr>
+              <tr><td rowspan="2">⚙️ Especializado</td><td>Project finance</td><td>Préstamo para construir un parque eólico</td></tr>
+              <tr><td>Motor vehicle loans</td><td>Préstamo para comprar un coche</td></tr>
+              <tr><td>🏛️ Soberano</td><td>Sovereign debt (deuda soberana)</td><td>El banco compra bonos del Estado español</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 1.6 -->
+        <div class="section-title"><span class="s-num">1.6</span> Diferencias entre PCAF y GHG Protocol Estándar</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Aspecto</th><th>GHG Protocol</th><th>PCAF</th></tr></thead>
+            <tbody>
+              <tr><td>Alcance</td><td>Cualquier empresa u organización</td><td>Específico para instituciones financieras</td></tr>
+              <tr><td>Enfoque Cat. 15</td><td>Identifica la categoría pero no detalla cómo calcularla</td><td>Proporciona fórmulas y jerarquía de datos por asset class</td></tr>
+              <tr><td>Factor de atribución</td><td>No especificado</td><td>Definido específicamente (EVIC, valor inmueble, coste de proyecto…)</td></tr>
+              <tr><td>Calidad del dato</td><td>No sistematizada</td><td>Escala 1-5 oficial</td></tr>
+              <tr><td>Emisiones evitadas</td><td>Fuera del inventario</td><td>Metodología separada y reconocida</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 1.7 -->
+        <div class="section-title"><span class="s-num">1.7</span> Calidad del Dato PCAF</div>
+        <p>No todos los datos de emisiones tienen la misma fiabilidad. PCAF establece una <strong>escala de calidad del 1 al 5</strong>, donde 1 es el más preciso y 5 el menos:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nivel</th><th>Calidad</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--verde-claro);font-weight:800;">1</td><td>Verificado</td><td>Datos de emisiones del cliente verificados por tercero</td><td>Informe de sostenibilidad auditado del cliente</td></tr>
+              <tr><td style="color:#27ae60;font-weight:800;">2</td><td>Reportado</td><td>Datos reportados por el cliente (no verificados externamente)</td><td>Auto-declaración del cliente en formulario ESG</td></tr>
+              <tr><td style="color:var(--dorado);font-weight:800;">3</td><td>Estimado con datos específicos</td><td>Estimación basada en datos físicos del activo</td><td>Consumo energético del edificio + factor de emisión</td></tr>
+              <tr><td style="color:#e67e22;font-weight:800;">4</td><td>Proxy sectorial</td><td>Ratio de emisiones por unidad de ingresos del sector</td><td>Intensidad de emisiones media del sector cementero</td></tr>
+              <tr><td style="color:var(--rojo-alerta);font-weight:800;">5</td><td>Muy estimado</td><td>Estimación basada en proxi de clase de activo</td><td>Media de emisiones de todas las empresas sin dato</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Caso Práctico</div>
+          <h4>Banco con 3 clientes distintos</h4>
+          <p>El Banco X tiene tres exposiciones:</p>
+          <ul>
+            <li><strong>Cliente A</strong> (gran corporación cotizada): publica sus emisiones verificadas en su informe de sostenibilidad. → <span class="hl">Calidad 1</span></li>
+            <li><strong>Cliente B</strong> (empresa mediana): rellena el cuestionario ESG del banco con sus datos internos. → <span class="hl">Calidad 2</span></li>
+            <li><strong>Cliente C</strong> (empresa pequeña, sector construcción): no tiene ningún dato de emisiones. → El banco aplica la intensidad media del sector construcción por unidad de ventas. → <span class="hl">Calidad 4</span></li>
+          </ul>
+          <p style="margin-top:10px;">PCAF exige que el banco informe del peso promedio de calidad del dato en su inventario. Un banco con mucho peso en datos de calidad 4 y 5 debe invertir en mejorar el dato de sus clientes.</p>
+        </div>
+
+        <!-- Mini-quiz M1 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 1</h3>
+          <div class="quiz-subtitle">Comprueba lo que has aprendido sobre PCAF y emisiones financiadas.</div>
+
+          <div class="quiz-question" id="q1-1">
+            <p>1. ¿Qué ocurre con las emisiones evitadas (por ejemplo, de un parque eólico financiado) según la metodología PCAF?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q1-1',this,false,'Las emisiones evitadas no se restan de las emisiones financiadas. Mezclarlas daría una imagen incorrecta de la huella.')"><span class="opt-letter">A</span> Se restan de las emisiones financiadas para obtener una cifra neta</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-1',this,true,'¡Correcto! Las emisiones evitadas se reportan de forma separada y tienen su propia metodología. Nunca se deducen del inventario principal de emisiones financiadas.')"><span class="opt-letter">B</span> Se reportan por separado, nunca se deducen del inventario principal</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-1',this,false,'PCAF sí tiene una metodología para reportar emisiones evitadas, pero como métrica adicional, no para reducir la huella.')"><span class="opt-letter">C</span> No se reportan en absoluto bajo PCAF</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-1',this,false,'Se suman al Scope 2, no se restan. Además, el Scope 2 del banco son sus propias compras de electricidad.')"><span class="opt-letter">D</span> Se suman al Scope 2 del banco</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q1-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q1-2">
+            <p>2. ¿Qué significa una calidad de dato PCAF de nivel 5?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q1-2',this,false,'Al contrario: nivel 1 es el mejor dato (verificado por tercero). El nivel 5 es el peor.')"><span class="opt-letter">A</span> Es el nivel más alto de fiabilidad, con datos verificados</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-2',this,false,'El nivel 2 corresponde a datos auto-reportados por el cliente, no el nivel 5.')"><span class="opt-letter">B</span> El cliente ha reportado sus datos, aunque sin verificación</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-2',this,true,'¡Correcto! El nivel 5 corresponde a la estimación más imprecisa, basada en proxies muy generales de clase de activo, cuando no se dispone de ningún dato específico del cliente.')"><span class="opt-letter">C</span> Es el nivel de menor fiabilidad: estimación basada en proxies muy generales</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-2',this,false,'El nivel 3 es donde se usan datos físicos del activo para estimar. El nivel 5 es aún más genérico.')"><span class="opt-letter">D</span> Se usan datos físicos del activo para estimar las emisiones</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q1-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q1-3">
+            <p>3. PCAF surgió originalmente como iniciativa de...</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q1-3',this,false,'El GHG Protocol fue desarrollado por el World Resources Institute (WRI) y el World Business Council for Sustainable Development (WBCSD), no por PCAF.')"><span class="opt-letter">A</span> El Banco Mundial y el GHG Protocol</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-3',this,false,'La TCFD fue creada por el Financial Stability Board (FSB), una organización diferente. PCAF tiene otro origen.')"><span class="opt-letter">B</span> La Comisión Europea y la TCFD</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-3',this,true,'¡Correcto! PCAF nació en 2015 en los Países Bajos, promovido por un grupo de bancos holandeses que querían un método común para medir sus emisiones financiadas. Desde entonces se ha expandido globalmente.')"><span class="opt-letter">C</span> Un grupo de bancos holandeses en 2015</div>
+              <div class="quiz-option" onclick="answerQuiz('q1-3',this,false,'El BCE tiene un papel supervisory en riesgos climáticos, pero no fundó PCAF.')"><span class="opt-letter">D</span> El Banco Central Europeo (BCE)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q1-3"></div>
+          </div>
+        </div>
+
+        <!-- Mensajes Clave M1 -->
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 1</h3>
+          <ul class="mensajes-list">
+            <li>Las emisiones financiadas son la proporción de emisiones de un cliente que se atribuye al banco en función de su financiación.</li>
+            <li>Emisiones operacionales, financiadas, evitadas y removals son conceptos distintos que nunca deben mezclarse.</li>
+            <li>PCAF completa al GHG Protocol, aportando metodología específica para instituciones financieras.</li>
+            <li>La escala de calidad del dato (1-5) mide la fiabilidad del cálculo: 1 es verificado, 5 es muy estimado.</li>
+            <li>Los reguladores (BCE, EBA, CSRD) están convirtiendo la medición de emisiones financiadas en una obligación, no una opción.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(0)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(1)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(2)">Siguiente: Capital y Deuda →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODULE 2 ========================= -->
+    <div class="module-page" id="module-2">
+      <div class="module-header">
+        <div class="module-badge">📙 Módulo 2</div>
+        <h2>Inversiones en Capital y Deuda</h2>
+        <p>Este módulo es el corazón operativo del cálculo de emisiones financiadas para grandes empresas. Aprenderemos qué es el EVIC, cómo calcular el factor de atribución y cómo llegar a la cifra final de emisiones financiadas con casos numéricos reales.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">📐 EVIC</span>
+          <span class="module-meta-badge">🔢 Factor de atribución</span>
+          <span class="module-meta-badge">💡 Cálculo paso a paso</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Identificar qué se incluye dentro de inversiones en capital y deuda corporativa.</li>
+            <li>Comprender el concepto de EVIC y por qué se usa como denominador.</li>
+            <li>Calcular el factor de atribución de un banco.</li>
+            <li>Aplicar la fórmula de emisiones financiadas a un caso realista con Scope 1+2 y Scope 1+2+3.</li>
+          </ul>
+        </div>
+
+        <!-- 2.1 -->
+        <div class="section-title"><span class="s-num">2.1</span> Equity y Deuda Corporativa</div>
+        <p>Los bancos financian a empresas de dos formas principales. Entendamos cada una con una analogía sencilla:</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Analogía: montar un restaurante</div>
+          <h4>Equity vs. Deuda</h4>
+          <p>Imagina que quieres montar un restaurante que cuesta 100.000 €. Puedes financiarlo de dos formas:<br><br><strong>Equity (capital propio / acciones):</strong> Convences a un inversor de que ponga 30.000 € a cambio de ser propietario del 30% del restaurante. Si el negocio va bien, gana con los dividendos. Si va mal, pierde su inversión. <em>Comparte riesgo y beneficio.</em><br><br><strong>Deuda (préstamo / bono):</strong> Pides un préstamo de 70.000 € al banco. Lo devuelves con intereses, independientemente de si el negocio va bien o mal. <em>El banco cobra antes que el propietario, pero no es dueño del restaurante.</em></p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Instrumento</th><th>¿Qué es?</th><th>¿El banco es propietario?</th><th>¿Cómo cobra?</th></tr></thead>
+            <tbody>
+              <tr><td>Acciones (equity)</td><td>Participación en el capital de la empresa</td><td>Sí (parcialmente)</td><td>Dividendos + plusvalías</td></tr>
+              <tr><td>Bonos corporativos</td><td>Deuda emitida por la empresa al mercado</td><td>No</td><td>Cupones (intereses) + devolución del principal</td></tr>
+              <tr><td>Préstamos bancarios</td><td>Crédito directo del banco a la empresa</td><td>No</td><td>Intereses + amortización</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2.2 -->
+        <div class="section-title"><span class="s-num">2.2</span> Qué Alcances de Emisiones se Incluyen</div>
+        <p>Para empresas financiadas (equity, bonos, préstamos), PCAF establece que se deben incluir:</p>
+        <ul>
+          <li><strong>Scope 1 del cliente:</strong> emisiones directas de las instalaciones de la empresa financiada. Obligatorio.</li>
+          <li><strong>Scope 2 del cliente:</strong> emisiones de la electricidad que consume la empresa financiada. Obligatorio.</li>
+          <li><strong>Scope 3 del cliente:</strong> si es <strong>material</strong> (significativo) para el sector. Recomendado en sectores donde el Scope 3 domina las emisiones totales.</li>
+        </ul>
+
+        <div class="card-alerta">
+          <div class="card-tag">⚠️ Alerta metodológica importante</div>
+          <p><strong>No confundir el Scope 3 del banco con el Scope 3 del cliente.</strong><br>Las emisiones financiadas son el <em>Scope 3 del banco</em> (categoría 15). Dentro de ese cálculo, podemos incluir el Scope 3 del cliente (sus propias cadenas de valor aguas arriba y aguas abajo). Son niveles distintos: el Scope 3 del cliente es una parte de los datos de input que usamos para calcular el Scope 3 del banco.</p>
+          <p style="margin-top:10px;">Ejemplo: en petróleo y gas, el Scope 3 del cliente (emisiones del uso del combustible que vende) puede representar más del 80% de sus emisiones totales. Ignorarlo subestimaría dramáticamente la huella financiada del banco.</p>
+        </div>
+
+        <!-- 2.3 -->
+        <div class="section-title"><span class="s-num">2.3</span> EVIC: Enterprise Value Including Cash</div>
+        <p>Para calcular qué proporción de las emisiones de una empresa corresponden al banco, necesitamos conocer el valor total de esa empresa. PCAF usa el <strong>EVIC (Enterprise Value Including Cash)</strong>.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Analogía del apartamento</div>
+          <h4>¿Qué es el EVIC?</h4>
+          <p>Imagina que quieres saber cuánto vale un apartamento "en total", contando todo lo que hay dentro. El <strong>EVIC</strong> de una empresa equivale a sumar: el valor de mercado de sus acciones (<em>capitalización bursátil</em>) + toda su deuda financiera + el efectivo que tiene en caja.<br><br>Dicho de otro modo: es el precio que habría que pagar para comprar absolutamente todo de la empresa: sus activos, sus deudas y su caja. Es el denominador "más justo" porque incluye todas las formas en que se ha financiado la empresa.</p>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Fórmula del EVIC</div>
+          <div class="formula-main">EVIC = Capitalización bursátil + Deuda financiera total + Efectivo</div>
+          <div class="formula-vars">
+            <span>Capitalización bursátil</span> = precio de la acción × número de acciones en circulación<br>
+            <span>Deuda financiera total</span> = préstamos bancarios + bonos emitidos + otras deudas financieras<br>
+            <span>Efectivo</span> = caja y equivalentes de tesorería
+          </div>
+        </div>
+
+        <!-- 2.4 -->
+        <div class="section-title"><span class="s-num">2.4</span> El Factor de Atribución</div>
+        <p>El <strong>factor de atribución</strong> mide qué porcentaje de la empresa (en términos de valor) representa la participación del banco. Nos dice: "de las emisiones totales de esta empresa, ¿qué fracción le corresponde al banco?"</p>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Factor de Atribución (Equity y Deuda Corporativa)</div>
+          <div class="formula-main">Factor de Atribución = Exposición del banco / EVIC</div>
+          <div class="formula-vars">
+            <span>Exposición del banco</span> = valor de las acciones en cartera + valor nominal del préstamo o bono<br>
+            <span>EVIC</span> = Enterprise Value Including Cash de la empresa financiada
+          </div>
+        </div>
+
+        <p>Para <strong>empresas no cotizadas</strong> (privadas, sin acciones en bolsa), no existe un precio de mercado disponible diariamente. En ese caso, PCAF permite usar alternativas como el valor contable de los fondos propios más la deuda, proxies sectoriales o metodologías de valoración internas del banco.</p>
+
+        <!-- 2.5 -->
+        <div class="section-title"><span class="s-num">2.5</span> Cálculo de Emisiones Financiadas</div>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Fórmula General — Emisiones Financiadas</div>
+          <div class="formula-main">Emisiones financiadas = Emisiones del cliente × Factor de atribución</div>
+          <div class="formula-vars">
+            Con <span>Scope 1+2</span>: Emisiones financiadas = (Sc1 + Sc2) × (Exposición / EVIC)<br>
+            Con <span>Scope 1+2+3</span>: Emisiones financiadas = (Sc1 + Sc2 + Sc3) × (Exposición / EVIC)
+          </div>
+        </div>
+
+        <!-- 2.6 -->
+        <div class="section-title"><span class="s-num">2.6</span> Ejemplo Práctico Paso a Paso</div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Caso Práctico — Préstamo Corporativo</div>
+          <h4>Banco Sostenible S.A. financia a EnerCo S.A.</h4>
+          <p><strong>Datos conocidos:</strong></p>
+          <ul>
+            <li>Exposición del banco (préstamo pendiente): <strong>20 M€</strong></li>
+            <li>EVIC de EnerCo: <strong>2.000 M€</strong></li>
+            <li>Scope 1 de EnerCo: <strong>900.000 tCO₂e/año</strong></li>
+            <li>Scope 2 de EnerCo: <strong>100.000 tCO₂e/año</strong></li>
+            <li>Scope 3 de EnerCo: <strong>1.500.000 tCO₂e/año</strong></li>
+          </ul>
+        </div>
+
+        <div class="card" style="border:2px solid var(--verde-medio);">
+          <div style="font-weight:800;font-size:16px;color:var(--verde-oscuro);margin-bottom:16px;">📊 Resolución paso a paso</div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 1: Factor de atribución</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--verde-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">
+              FA = 20 M€ / 2.000 M€ = <strong style="color:var(--dorado-claro);">0,01 = 1%</strong>
+            </div>
+            <p class="text-sm text-muted" style="margin-top:8px;">El banco representa el 1% del valor total de EnerCo. Por tanto, le corresponde el 1% de sus emisiones.</p>
+          </div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 2: Emisiones financiadas Scope 1+2</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--verde-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">
+              EF(S1+S2) = (900.000 + 100.000) × 0,01 = <strong style="color:var(--dorado-claro);">10.000 tCO₂e</strong>
+            </div>
+          </div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 3: Emisiones financiadas Scope 1+2+3</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--verde-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">
+              EF(S1+S2+S3) = (900.000 + 100.000 + 1.500.000) × 0,01 = <strong style="color:var(--dorado-claro);">25.000 tCO₂e</strong>
+            </div>
+          </div>
+
+          <div style="background:#e8f8ef;border-radius:10px;padding:16px 20px;border-left:4px solid var(--verde-exito);">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">📖 Interpretación</div>
+            <p class="text-sm">De los 20 M€ que el Banco Sostenible tiene prestados a EnerCo, resultan <strong>10.000 tCO₂e atribuibles (S1+S2)</strong> o <strong>25.000 tCO₂e si incluimos el Scope 3</strong> del cliente. El Scope 3 del cliente <strong>multiplica por 2,5 la huella</strong>, lo que justifica por qué es relevante incluirlo en sectores energéticos.</p>
+          </div>
+        </div>
+
+        <!-- 2.7 -->
+        <div class="section-title"><span class="s-num">2.7</span> Consolidación Financiera</div>
+        <p>Cuando un banco o empresa tiene participaciones en otras entidades (filiales, joint ventures), surge la pregunta de cómo consolidar las emisiones. El GHG Protocol contempla tres enfoques:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Enfoque</th><th>Cuándo se usa</th><th>Criterio</th></tr></thead>
+            <tbody>
+              <tr><td>Equity share</td><td>Por defecto en PCAF</td><td>Incluyes las emisiones en proporción a tu participación accionarial</td></tr>
+              <tr><td>Financial control</td><td>Cuando controlas las decisiones financieras de la entidad</td><td>Incluyes el 100% de las emisiones si tienes control financiero</td></tr>
+              <tr><td>Operational control</td><td>Cuando controlas las operaciones diarias</td><td>Incluyes el 100% si tienes control operativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-error">
+          <div class="card-tag">❌ Errores Comunes — Módulo 2</div>
+          <p><strong>Error 1:</strong> Usar el valor contable de la empresa en lugar del EVIC. El EVIC refleja el valor de mercado, que es más representativo del riesgo económico real.<br><br>
+          <strong>Error 2:</strong> No incluir el Scope 3 del cliente cuando es dominante (petróleo y gas, automoción, alimentación). Subestimaría gravemente la huella.<br><br>
+          <strong>Error 3:</strong> Confundir el denominador: en equity y deuda corporativa se usa EVIC; en project finance se usa el coste total del proyecto; en inmuebles se usa el valor del activo. Mezclarlos es un error grave.</p>
+        </div>
+
+        <!-- Mini-quiz M2 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 2</h3>
+          <div class="quiz-subtitle">Pon a prueba tus conocimientos sobre EVIC y factor de atribución.</div>
+
+          <div class="quiz-question" id="q2-1">
+            <p>1. Un banco tiene 50 M€ invertidos en acciones de una empresa con EVIC = 1.000 M€ y emisiones Scope 1+2 de 800.000 tCO₂e. ¿Cuáles son sus emisiones financiadas?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q2-1',this,false,'FA = 50/1000 = 5%. EF = 800.000 × 0,05 = 40.000 tCO₂e. La respuesta no es 8.000.')"><span class="opt-letter">A</span> 8.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-1',this,true,'¡Correcto! FA = 50M / 1.000M = 5%. EF = 800.000 × 0,05 = 40.000 tCO₂e.')"><span class="opt-letter">B</span> 40.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-1',this,false,'Para obtener 800.000 el banco debería tener el 100% del EVIC. Aquí tiene el 5%.')"><span class="opt-letter">C</span> 800.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-1',this,false,'Para obtener 4.000 el FA sería 0,5%. Revisa: 50M / 1.000M = 5%, no 0,5%.')"><span class="opt-letter">D</span> 4.000 tCO₂e</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q2-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q2-2">
+            <p>2. ¿Qué componentes forman el EVIC de una empresa?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q2-2',this,false,'El EBITDA es un indicador de rentabilidad operativa, no se incluye en el EVIC.')"><span class="opt-letter">A</span> Beneficio neto + EBITDA + Deuda</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-2',this,true,'¡Correcto! El EVIC = Capitalización bursátil (valor de mercado de las acciones) + Deuda financiera total + Efectivo. Representa el valor total de la empresa para todos sus aportadores de capital.')"><span class="opt-letter">B</span> Capitalización bursátil + Deuda financiera + Efectivo</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-2',this,false,'Los activos totales del balance incluyen activos no financieros y no representan el mismo concepto que el EVIC.')"><span class="opt-letter">C</span> Activos totales del balance</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-2',this,false,'Los fondos propios (patrimonio neto) son solo una parte del EVIC. No incluyen la deuda ni el efectivo.')"><span class="opt-letter">D</span> Solo los fondos propios (patrimonio neto)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q2-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q2-3">
+            <p>3. ¿Por qué es especialmente importante incluir el Scope 3 del cliente al calcular emisiones financiadas en el sector petróleo y gas?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q2-3',this,false,'Los datos del Scope 3 no son siempre más fiables; de hecho suelen tener mayor incertidumbre. Pero eso no es la razón por la que se incluyen.')"><span class="opt-letter">A</span> Porque los datos de Scope 3 son siempre más fiables</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-3',this,false,'PCAF no excluye el Scope 1+2 de petróleo y gas; los incluye como base.')"><span class="opt-letter">B</span> Porque el Scope 1 y 2 no aplican a ese sector</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-3',this,true,'¡Correcto! En petróleo y gas, las emisiones por el uso del combustible vendido (Scope 3 downstream del cliente) pueden superar el 80% de sus emisiones totales. Ignorarlas subestimaría dramáticamente la huella financiada del banco.')"><span class="opt-letter">C</span> Porque el Scope 3 (uso del combustible vendido) puede superar el 80% de las emisiones totales</div>
+              <div class="quiz-option" onclick="answerQuiz('q2-3',this,false,'El regulador solo obliga al Scope 1+2 como mínimo. La inclusión del Scope 3 es una decisión de materialidad, no solo regulatoria.')"><span class="opt-letter">D</span> Porque el regulador europeo lo exige obligatoriamente</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q2-3"></div>
+          </div>
+        </div>
+
+        <!-- Mensajes Clave M2 -->
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 2</h3>
+          <ul class="mensajes-list">
+            <li>El EVIC (capitalización + deuda + caja) es el denominador usado para calcular el factor de atribución en inversiones corporativas.</li>
+            <li>Factor de atribución = Exposición del banco / EVIC. Cuanto mayor la exposición, mayor la huella atribuida.</li>
+            <li>Emisiones financiadas = Emisiones del cliente × Factor de atribución.</li>
+            <li>El Scope 3 del cliente debe incluirse cuando es material (petróleo, gas, automoción, alimentación).</li>
+            <li>No confundir el Scope 3 del banco (categoría 15) con el Scope 3 del cliente: son niveles distintos de análisis.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(1)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(2)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(3)">Siguiente: Project Finance →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODULE 3 ========================= -->
+    <div class="module-page" id="module-3">
+      <div class="module-header">
+        <div class="module-badge">📒 Módulo 3</div>
+        <h2>Financiación de Proyectos (Project Finance)</h2>
+        <p>No todo lo que financia un banco es una empresa: a veces se financia un proyecto concreto. Parques eólicos, carreteras, plantas industriales. La metodología cambia. Aquí aprenderemos cómo funciona y cómo se tratan las emisiones evitadas.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">🌬️ Renovables</span>
+          <span class="module-meta-badge">🔢 Factor de atribución</span>
+          <span class="module-meta-badge">🌿 Emisiones evitadas</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Comprender qué es el project finance y en qué se diferencia de financiar una empresa.</li>
+            <li>Conocer los tipos de proyectos incluidos y sus perfiles de emisiones.</li>
+            <li>Entender cómo se calculan las emisiones financiadas en proyectos.</li>
+            <li>Distinguir correctamente entre emisiones evitadas, reducciones y eliminaciones.</li>
+          </ul>
+        </div>
+
+        <!-- 3.1 -->
+        <div class="section-title"><span class="s-num">3.1</span> Qué es el Project Finance</div>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Analogía sencilla</div>
+          <h4>Financiar una empresa vs. financiar un proyecto</h4>
+          <p>Cuando un banco financia a una empresa (como vimos en el Módulo 2), está apostando por el negocio en su conjunto: su historial, sus activos, su equipo, sus perspectivas futuras. Si el negocio va mal, el banco puede reclamar cualquier activo de la empresa.<br><br>En el <strong>project finance</strong>, el banco financia un proyecto específico y concreto (una autopista, un parque solar). El préstamo se garantiza exclusivamente con los flujos de caja y activos de ese proyecto, no con el resto del grupo empresarial. Es como prestar dinero para construir un edificio de apartamentos: solo cobras de los alquileres de ese edificio.</p>
+        </div>
+
+        <p>Ejemplos de operaciones de project finance:</p>
+        <ul>
+          <li>🌬️ Parque eólico offshore de 500 MW en el Mar del Norte</li>
+          <li>☀️ Planta fotovoltaica de 200 MW en Andalucía</li>
+          <li>🛣️ Autopista de peaje de 120 km en concesión</li>
+          <li>⚡ Central de ciclo combinado de gas natural</li>
+          <li>⚓ Terminal portuaria de GNL</li>
+          <li>🏭 Planta de producción de hidrógeno verde</li>
+        </ul>
+
+        <!-- 3.2 -->
+        <div class="section-title"><span class="s-num">3.2</span> Tipos de Proyectos y Perfiles de Emisiones</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tipo de proyecto</th><th>Perfil de emisiones operacionales</th><th>Observaciones</th></tr></thead>
+            <tbody>
+              <tr><td>Energías renovables (solar, eólico)</td><td>Muy bajas (~5-50 gCO₂e/kWh ciclo de vida)</td><td>Emisiones principalmente en fabricación e instalación</td></tr>
+              <tr><td>Gas natural (ciclo combinado)</td><td>Medias (~400-500 gCO₂e/kWh)</td><td>Significativamente menos que carbón, pero sigue siendo fósil</td></tr>
+              <tr><td>Carbón (central térmica)</td><td>Muy altas (~900-1.100 gCO₂e/kWh)</td><td>Alto riesgo de stranded asset con políticas de descarbonización</td></tr>
+              <tr><td>Infraestructuras de transporte</td><td>Variables según tipo y uso</td><td>Emisiones indirectas por el tráfico inducido</td></tr>
+              <tr><td>Industria pesada (siderurgia, cemento)</td><td>Altas con proceso y energía</td><td>Difíciles de descarbonizar; gran importancia de CCS</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3.3 -->
+        <div class="section-title"><span class="s-num">3.3</span> Temporalidad de las Emisiones</div>
+        <p>Un proyecto no emite de forma uniforme a lo largo de toda su vida. Es importante entender las fases:</p>
+
+        <div class="step-diagram">
+          <div class="step-item">
+            <div class="step-num">Fase 1</div>
+            <div class="step-text">🏗️ Construcción<br><span style="font-size:11px;color:var(--texto-secundario)">Emisiones intensas: materiales, maquinaria, transporte. No hay producción todavía.</span></div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item">
+            <div class="step-num">Fase 2</div>
+            <div class="step-text">⚙️ Operación<br><span style="font-size:11px;color:var(--texto-secundario)">Emisiones regulares. Para renovables son mínimas. Para fósiles son el mayor bloque.</span></div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item">
+            <div class="step-num">Fase 3</div>
+            <div class="step-text">🔚 Desmantelamiento<br><span style="font-size:11px;color:var(--texto-secundario)">Emisiones de demolición y gestión de residuos. A menudo ignoradas pero relevantes.</span></div>
+          </div>
+        </div>
+
+        <p>PCAF trabaja típicamente con las <strong>emisiones anuales de operación</strong> para el cálculo de emisiones financiadas corrientes, aunque existen metodologías de ciclo de vida completo para análisis más exhaustivos.</p>
+
+        <!-- 3.4 -->
+        <div class="section-title"><span class="s-num">3.4</span> Emisiones Evitadas</div>
+        <p>Un parque eólico no genera apenas emisiones, pero además <strong>evita</strong> que se produzcan emisiones de otras fuentes que habrían generado la misma electricidad. A esto se le llama <strong>emisiones evitadas</strong>.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Cómo se calculan las emisiones evitadas</div>
+          <h4>El escenario de referencia (baseline)</h4>
+          <p>Para calcular emisiones evitadas necesitamos un <strong>escenario counterfactual</strong>: ¿qué habría pasado si este proyecto no existiera? Si el parque eólico no existiera, esa electricidad la habrían generado otras fuentes del mix eléctrico, con su factor de emisión correspondiente.<br><br><strong>Emisiones evitadas = Energía producida × (Factor de emisión del mix – Factor de emisión del proyecto)</strong></p>
+        </div>
+
+        <p>Conceptos clave relacionados:</p>
+        <ul>
+          <li><strong>Baseline scenario:</strong> el escenario contrafactual de referencia (qué habría ocurrido sin el proyecto).</li>
+          <li><strong>Adicionalidad:</strong> el proyecto debe generar un beneficio climático real adicional al que habría ocurrido de todas formas.</li>
+          <li><strong>Factor de emisión desplazado:</strong> las emisiones por unidad de energía del sistema que el proyecto reemplaza.</li>
+        </ul>
+
+        <div class="card-error">
+          <div class="card-tag">❌ Error crítico</div>
+          <p>Las emisiones evitadas <strong>NO se restan automáticamente</strong> de las emisiones financiadas. Son métricas complementarias que se reportan por separado. Si un banco financiara parques eólicos pero también centrales de carbón, no podría "compensar" las emisiones del carbón con las evitadas del eólico para mostrar una cifra neta más baja en su inventario principal.</p>
+        </div>
+
+        <!-- 3.5 -->
+        <div class="section-title"><span class="s-num">3.5</span> Avoidance, Reduction y Removal</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Concepto</th><th>Qué significa</th><th>Ejemplo</th></tr></thead>
+            <tbody>
+              <tr><td>Avoidance (evitar)</td><td>No producir emisiones que de otro modo habrían ocurrido</td><td>Parque eólico que evita quemar gas natural</td></tr>
+              <tr><td>Reduction (reducir)</td><td>Emitir menos en un proceso existente mediante mejoras</td><td>Renovación de una caldera que la hace 30% más eficiente</td></tr>
+              <tr><td>Removal (eliminar)</td><td>Capturar y almacenar CO₂ ya emitido o del ambiente</td><td>Reforestación, captura directa de aire (DAC), CCS</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3.6 -->
+        <div class="section-title"><span class="s-num">3.6</span> Factor de Atribución y Cálculo en Proyectos</div>
+        <p>En project finance, el denominador no es el EVIC (no hay empresa cotizada), sino el <strong>coste total del proyecto</strong>.</p>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Fórmula — Project Finance</div>
+          <div class="formula-main">FA = Exposición del banco / Coste total del proyecto</div>
+          <div class="formula-vars" style="margin-top:10px;"></div>
+          <div class="formula-main">Emisiones financiadas = Emisiones anuales del proyecto × FA</div>
+          <div class="formula-vars">
+            <span>Coste total del proyecto</span> = inversión total en construcción y puesta en marcha<br>
+            <span>Exposición del banco</span> = saldo vivo del préstamo al proyecto
+          </div>
+        </div>
+
+        <!-- 3.7 -->
+        <div class="section-title"><span class="s-num">3.7</span> Ejemplo Práctico — Project Finance</div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Caso Práctico</div>
+          <h4>Parque eólico financiado por GreenBank</h4>
+          <ul>
+            <li>Coste total del proyecto: <strong>300 M€</strong></li>
+            <li>Exposición del banco (préstamo): <strong>60 M€</strong></li>
+            <li>Emisiones anuales del proyecto (operación): <strong>12.000 tCO₂e/año</strong></li>
+            <li>Emisiones evitadas estimadas: <strong>150.000 tCO₂e/año</strong></li>
+          </ul>
+        </div>
+
+        <div class="card" style="border:2px solid var(--verde-medio);">
+          <div style="font-weight:800;font-size:16px;color:var(--verde-oscuro);margin-bottom:16px;">📊 Resolución</div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 1: Factor de atribución</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--verde-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">FA = 60 M€ / 300 M€ = <strong style="color:var(--dorado-claro);">0,20 = 20%</strong></div>
+          </div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 2: Emisiones financiadas</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--verde-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">EF = 12.000 × 0,20 = <strong style="color:var(--dorado-claro);">2.400 tCO₂e/año</strong></div>
+          </div>
+
+          <div style="background:var(--gris-claro);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);margin-bottom:6px;">Paso 3: Emisiones evitadas atribuibles (reportadas por separado)</div>
+            <div style="font-family:'Courier New',monospace;font-size:14px;background:var(--azul-oscuro);color:var(--blanco);padding:10px 14px;border-radius:8px;">EV = 150.000 × 0,20 = <strong style="color:var(--dorado-claro);">30.000 tCO₂e/año evitadas</strong></div>
+          </div>
+
+          <div style="background:#e8f8ef;border-radius:10px;padding:16px 20px;border-left:4px solid var(--verde-exito);">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:6px;">📖 Interpretación</div>
+            <p class="text-sm">GreenBank reporta <strong>2.400 tCO₂e</strong> de emisiones financiadas (en su inventario principal de Scope 3 Cat. 15) y <strong>30.000 tCO₂e evitadas</strong> como métrica complementaria. Las evitadas son 12,5 veces mayores que las directas, lo que muestra el enorme beneficio climático del proyecto. Pero estas cifras NO se compensan entre sí.</p>
+          </div>
+        </div>
+
+        <!-- Mini-quiz M3 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 3</h3>
+          <div class="quiz-subtitle">Comprueba tu comprensión del project finance y las emisiones evitadas.</div>
+
+          <div class="quiz-question" id="q3-1">
+            <p>1. En project finance, ¿qué denominador se usa para calcular el factor de atribución?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q3-1',this,false,'El EVIC se usa para empresas cotizadas o privadas (inversiones en equity y deuda corporativa), no para project finance.')"><span class="opt-letter">A</span> El EVIC de la empresa promotora del proyecto</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-1',this,true,'¡Correcto! En project finance se usa el coste total del proyecto como denominador, dado que el proyecto es una entidad autónoma sin cotización en bolsa.')"><span class="opt-letter">B</span> El coste total del proyecto</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-1',this,false,'Los ingresos anuales del proyecto son un indicador de rentabilidad, no el denominador de atribución en PCAF.')"><span class="opt-letter">C</span> Los ingresos anuales del proyecto</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-1',this,false,'El valor de mercado del proyecto al finalizar la construcción puede variar mucho y no es el denominador estándar en PCAF.')"><span class="opt-letter">D</span> El valor de mercado del proyecto al finalizar la construcción</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q3-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q3-2">
+            <p>2. ¿Cómo deben reportarse las emisiones evitadas de un parque eólico según PCAF?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q3-2',this,false,'Las emisiones evitadas no se restan de las financiadas. Eso daría una imagen distorsionada de la cartera.')"><span class="opt-letter">A</span> Restándolas de las emisiones financiadas para obtener una cifra neta</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-2',this,false,'PCAF sí reconoce y fomenta el reporte de emisiones evitadas, pero como métrica separada.')"><span class="opt-letter">B</span> No se reportan bajo PCAF, ya que no son emisiones reales</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-2',this,true,'¡Correcto! Las emisiones evitadas se reportan de forma separada como métrica complementaria, con su propia metodología y sin mezclarse con el inventario principal de emisiones financiadas.')"><span class="opt-letter">C</span> Como métrica separada y complementaria, nunca mezclada con el inventario principal</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-2',this,false,'Las emisiones evitadas no se suman al Scope 1 del banco (sus propias emisiones directas), que son categorías completamente distintas.')"><span class="opt-letter">D</span> Sumándolas al Scope 1 del banco como compensación</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q3-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q3-3">
+            <p>3. Un banco financia el 25% del coste de una planta solar que emite 8.000 tCO₂e/año. ¿Cuáles son las emisiones financiadas?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q3-3',this,false,'Para obtener 8.000 el banco debería financiar el 100% del proyecto.')"><span class="opt-letter">A</span> 8.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-3',this,false,'Para obtener 32.000 el banco financiaría el 400%, lo que no tiene sentido.')"><span class="opt-letter">B</span> 32.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-3',this,true,'¡Correcto! FA = 25%. Emisiones financiadas = 8.000 × 0,25 = 2.000 tCO₂e/año.')"><span class="opt-letter">C</span> 2.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerQuiz('q3-3',this,false,'Para obtener 4.000 el banco financiaría el 50%.')"><span class="opt-letter">D</span> 4.000 tCO₂e</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q3-3"></div>
+          </div>
+        </div>
+
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 3</h3>
+          <ul class="mensajes-list">
+            <li>En project finance, el denominador es el coste total del proyecto, no el EVIC.</li>
+            <li>Las emisiones pueden ocurrir en construcción, operación y desmantelamiento. PCAF trabaja principalmente con operación.</li>
+            <li>Emisiones evitadas ≠ emisiones negativas: son métricas separadas que nunca se descuentan del inventario principal.</li>
+            <li>La adicionalidad y el baseline son conceptos clave para calcular emisiones evitadas de forma rigurosa.</li>
+            <li>Proyectos renovables tienen emisiones financiadas bajas pero pueden reportar altas emisiones evitadas como beneficio climático adicional.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(2)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(3)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(4)">Siguiente: Otras Clases de Activo →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODULE 4 ========================= -->
+    <div class="module-page" id="module-4">
+      <div class="module-header">
+        <div class="module-badge">📕 Módulo 4</div>
+        <h2>Otras Clases de Activo</h2>
+        <p>Los bancos no solo financian grandes empresas o proyectos. Inmuebles, hipotecas, coches y deuda soberana también forman parte de la cartera y tienen su propia metodología en PCAF. Vemos cómo funciona cada una.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">🏢 Inmuebles</span>
+          <span class="module-meta-badge">🏠 Hipotecas</span>
+          <span class="module-meta-badge">🚗 Vehículos</span>
+          <span class="module-meta-badge">🏛️ Soberano</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Comprender la metodología PCAF para inmuebles comerciales e hipotecas residenciales.</li>
+            <li>Calcular emisiones financiadas de préstamos para vehículos.</li>
+            <li>Entender el tratamiento de la deuda soberana y sus particularidades.</li>
+            <li>Conocer las principales limitaciones metodológicas de PCAF.</li>
+          </ul>
+        </div>
+
+        <!-- 4.1 -->
+        <div class="section-title"><span class="s-num">4.1</span> La Composición de una Cartera Bancaria Típica</div>
+        <p>Más allá de los préstamos a grandes empresas, la cartera de un banco incluye una variedad de activos con características muy diferentes:</p>
+
+        <div class="card-grid">
+          <div class="card" style="padding:16px 18px;text-align:center;">
+            <div style="font-size:28px;">🏭</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin:6px 0;">Empresas</div>
+            <div class="text-sm text-muted">Préstamos, acciones, bonos corporativos. Metodología EVIC (Módulo 2).</div>
+          </div>
+          <div class="card" style="padding:16px 18px;text-align:center;">
+            <div style="font-size:28px;">🏢</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin:6px 0;">Inmuebles comerciales</div>
+            <div class="text-sm text-muted">Oficinas, centros comerciales, naves. Intensidad energética del edificio.</div>
+          </div>
+          <div class="card" style="padding:16px 18px;text-align:center;">
+            <div style="font-size:28px;">🏠</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin:6px 0;">Hipotecas residenciales</div>
+            <div class="text-sm text-muted">Viviendas de particulares. Certificado de eficiencia energética (EPC).</div>
+          </div>
+          <div class="card" style="padding:16px 18px;text-align:center;">
+            <div style="font-size:28px;">🚗</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin:6px 0;">Préstamos para vehículos</div>
+            <div class="text-sm text-muted">Financiación de coches. Emisiones por km × kilómetros anuales.</div>
+          </div>
+          <div class="card" style="padding:16px 18px;text-align:center;">
+            <div style="font-size:28px;">🏛️</div>
+            <div style="font-weight:700;color:var(--verde-oscuro);margin:6px 0;">Deuda soberana</div>
+            <div class="text-sm text-muted">Bonos del Estado. Basada en intensidad de emisiones del país.</div>
+          </div>
+        </div>
+
+        <!-- 4.2 -->
+        <div class="section-title"><span class="s-num">4.2</span> Inmuebles Comerciales</div>
+        <p>Un inmueble comercial (oficina, nave industrial, hotel, centro comercial) consume energía para iluminación, climatización, ascensores y equipamiento. Esa energía genera emisiones.</p>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Metodología — Inmuebles Comerciales</div>
+          <div class="formula-main">FA = Préstamo pendiente / Valor del inmueble</div>
+          <div class="formula-vars" style="margin-top:10px;"></div>
+          <div class="formula-main">EF = Emisiones del inmueble × FA</div>
+          <div class="formula-vars">
+            <span>Emisiones del inmueble</span> = Consumo energético (kWh) × Factor de emisión (kgCO₂e/kWh)<br>
+            Alternativamente: <span>intensidad energética (kWh/m²)</span> × superficie × factor de emisión
+          </div>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Ejemplo — Edificio de Oficinas</div>
+          <h4>Préstamo a edificio de oficinas en Madrid</h4>
+          <ul>
+            <li>Valor del inmueble: <strong>100 M€</strong></li>
+            <li>Préstamo pendiente del banco: <strong>40 M€</strong></li>
+            <li>Emisiones anuales del edificio: <strong>5.000 tCO₂e</strong> (basadas en consumo energético y factor de emisión del mix eléctrico español)</li>
+          </ul>
+          <div style="background:var(--verde-oscuro);color:var(--blanco);font-family:'Courier New',monospace;padding:10px 14px;border-radius:8px;margin-top:12px;font-size:13px;">
+            FA = 40 M€ / 100 M€ = 40%<br>
+            EF = 5.000 × 0,40 = <strong style="color:var(--dorado-claro);">2.000 tCO₂e/año</strong>
+          </div>
+        </div>
+
+        <!-- 4.3 -->
+        <div class="section-title"><span class="s-num">4.3</span> Hipotecas Residenciales</div>
+        <p>Las hipotecas financian viviendas de particulares. Las emisiones provienen principalmente de la calefacción, refrigeración y agua caliente del hogar. El indicador clave es la <strong>eficiencia energética</strong> de la vivienda.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Qué es el EPC (Energy Performance Certificate)</div>
+          <h4>Certificado de Eficiencia Energética</h4>
+          <p>En Europa, cada vivienda tiene (o debería tener) un certificado de eficiencia energética que va de la letra <strong>A</strong> (muy eficiente) a la <strong>G</strong> (muy ineficiente). Una vivienda A consume mucha menos energía que una G. Este rating es el dato de entrada principal para calcular las emisiones financiadas de una hipoteca. Cuanto mejor el EPC, menor la huella financiada.</p>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Metodología — Hipotecas</div>
+          <div class="formula-main">FA = Hipoteca pendiente / Valor de la vivienda</div>
+          <div class="formula-main" style="margin-top:8px;">Emisiones vivienda = Consumo energético (kWh/año) × Factor de emisión</div>
+          <div class="formula-main" style="margin-top:8px;">EF = Emisiones vivienda × FA</div>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Ejemplo — Hipoteca Residencial</div>
+          <h4>Hipoteca sobre vivienda en Barcelona</h4>
+          <ul>
+            <li>Valor de la vivienda: <strong>250.000 €</strong></li>
+            <li>Hipoteca pendiente: <strong>150.000 €</strong></li>
+            <li>Emisiones anuales de la vivienda: <strong>3 tCO₂e</strong> (EPC D, piso de 80 m²)</li>
+          </ul>
+          <div style="background:var(--verde-oscuro);color:var(--blanco);font-family:'Courier New',monospace;padding:10px 14px;border-radius:8px;margin-top:12px;font-size:13px;">
+            FA = 150.000 / 250.000 = 60%<br>
+            EF = 3 × 0,60 = <strong style="color:var(--dorado-claro);">1,80 tCO₂e/año</strong>
+          </div>
+        </div>
+
+        <!-- 4.4 -->
+        <div class="section-title"><span class="s-num">4.4</span> Préstamos para Vehículos</div>
+        <p>La financiación de automóviles tiene una metodología basada en el <strong>tipo de combustible</strong> y los <strong>kilómetros recorridos</strong> anualmente.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Tank-to-Wheel vs. Well-to-Wheel</div>
+          <h4>¿Desde dónde contamos las emisiones?</h4>
+          <p><strong>Tank-to-Wheel (TtW):</strong> solo considera las emisiones del tubo de escape (desde el depósito hasta las ruedas). Un coche eléctrico tiene 0 emisiones TtW.<br><br><strong>Well-to-Wheel (WtW):</strong> incluye también las emisiones de extraer, refinar y transportar el combustible hasta el depósito (o la cadena eléctrica). Un EV tiene emisiones WtW bajas pero no cero, dependiendo del mix eléctrico del país.</p>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Metodología — Vehículos</div>
+          <div class="formula-main">FA = Préstamo pendiente / Valor del vehículo</div>
+          <div class="formula-main" style="margin-top:8px;">Emisiones vehículo = km/año × gCO₂e/km × factor conversión</div>
+          <div class="formula-main" style="margin-top:8px;">EF = Emisiones vehículo × FA</div>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Ejemplo — Préstamo para vehículo</div>
+          <h4>Financiación de un turismo gasolina</h4>
+          <ul>
+            <li>Valor del vehículo: <strong>30.000 €</strong></li>
+            <li>Préstamo pendiente: <strong>18.000 €</strong></li>
+            <li>Emisiones anuales del vehículo: <strong>2,5 tCO₂e</strong> (15.000 km/año × 165 gCO₂/km)</li>
+          </ul>
+          <div style="background:var(--verde-oscuro);color:var(--blanco);font-family:'Courier New',monospace;padding:10px 14px;border-radius:8px;margin-top:12px;font-size:13px;">
+            FA = 18.000 / 30.000 = 60%<br>
+            EF = 2,5 × 0,60 = <strong style="color:var(--dorado-claro);">1,50 tCO₂e/año</strong>
+          </div>
+        </div>
+
+        <!-- 4.5 -->
+        <div class="section-title"><span class="s-num">4.5</span> Deuda Soberana</div>
+        <p>Los bancos también compran bonos emitidos por Estados (bonos del gobierno). Un banco que tiene en cartera bonos del Estado español, alemán o americano también genera una huella financiada soberana.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 El dilema de la deuda soberana</div>
+          <h4>¿Puede un banco "poseer" las emisiones de un país?</h4>
+          <p>Aquí surge una paradoja: cuando un banco compra bonos del Estado, está financiando al gobierno para que este preste servicios públicos (sanidad, educación, infraestructuras). Pero el gobierno también recauda impuestos de sus ciudadanos y empresas. Atribuirle las emisiones territoriales de todo un país al banco es metodológicamente cuestionable.<br><br>PCAF propone usar la <strong>intensidad de emisiones por PIB o per cápita</strong> del país, multiplicada por la <strong>financed share</strong> (proporción del banco sobre el PIB o deuda del país). Es una aproximación imperfecta pero es la más consistente disponible.</p>
+        </div>
+
+        <!-- 4.6 -->
+        <div class="section-title"><span class="s-num">4.6</span> Tabla Comparativa por Clase de Activo</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Clase de activo</th><th>Denominador (factor de atribución)</th><th>Dato de emisiones</th><th>Principal reto</th></tr></thead>
+            <tbody>
+              <tr><td>Acciones cotizadas / Bonos / Préstamos corp.</td><td>EVIC</td><td>Scope 1+2 (+ Scope 3 si material)</td><td>Disponibilidad y calidad del dato del cliente</td></tr>
+              <tr><td>Project finance</td><td>Coste total del proyecto</td><td>Emisiones del proyecto (ciclo de vida u operación)</td><td>Datos de proyectos no estándar; emisiones de construcción</td></tr>
+              <tr><td>Inmuebles comerciales</td><td>Valor del inmueble</td><td>Consumo energético + factor de emisión</td><td>Disponibilidad de datos de consumo energético real</td></tr>
+              <tr><td>Hipotecas residenciales</td><td>Valor de la vivienda</td><td>EPC o consumo proxy por m²</td><td>Cobertura del EPC; mix eléctrico variable</td></tr>
+              <tr><td>Préstamos para vehículos</td><td>Valor del vehículo</td><td>gCO₂e/km × km/año</td><td>Datos de uso real vs. homologación</td></tr>
+              <tr><td>Deuda soberana</td><td>Financed share del PIB o deuda</td><td>Emisiones territoriales o de consumo del país</td><td>Debate metodológico; difícil de gestionar activamente</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4.7 -->
+        <div class="section-title"><span class="s-num">4.7</span> Limitaciones Metodológicas de PCAF</div>
+
+        <div class="card-error">
+          <div class="card-tag">❌ Limitaciones a conocer</div>
+          <p><strong>1. Disponibilidad de datos:</strong> Muchas empresas pequeñas y medianas (PYMES) no reportan sus emisiones. Los bancos deben usar proxies sectoriales (calidad 4-5), lo que genera incertidumbre.</p>
+          <p style="margin-top:8px;"><strong>2. Doble conteo:</strong> Si un banco tiene tanto acciones como un bono de la misma empresa, podría contar sus emisiones dos veces. PCAF tiene reglas para evitarlo.</p>
+          <p style="margin-top:8px;"><strong>3. Comparabilidad:</strong> Los bancos aplican PCAF con distintos grados de rigor. Las cifras publicadas no siempre son comparables entre entidades.</p>
+          <p style="margin-top:8px;"><strong>4. Incertidumbre inherente:</strong> La escala 1-5 de calidad del dato reconoce que hay incertidumbre. Un banco con mucho Scope 3 de clientes no reportado tendrá grandes incertidumbres.</p>
+          <p style="margin-top:8px;"><strong>5. Reporting inconsistente:</strong> Las distintas normas de divulgación (CSRD, TCFD, ISSB) tienen requisitos similares pero no idénticos, lo que genera fragmentación.</p>
+        </div>
+
+        <!-- Mini-quiz M4 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 4</h3>
+          <div class="quiz-subtitle">Pon a prueba lo aprendido sobre otras clases de activo.</div>
+
+          <div class="quiz-question" id="q4-1">
+            <p>1. Para calcular las emisiones financiadas de una hipoteca, ¿qué denominador se usa en el factor de atribución?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q4-1',this,false,'El EVIC se usa para empresas, no para inmuebles residenciales. La vivienda de un particular no tiene &quot;enterprise value&quot; ni cotiza en bolsa.')"><span class="opt-letter">A</span> El EVIC del propietario de la vivienda</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-1',this,true,'¡Correcto! En hipotecas, el denominador es el valor de mercado de la vivienda. FA = hipoteca pendiente / valor de la vivienda.')"><span class="opt-letter">B</span> El valor de mercado de la vivienda</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-1',this,false,'Los ingresos anuales del propietario no son el denominador en PCAF para hipotecas.')"><span class="opt-letter">C</span> Los ingresos anuales del propietario</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-1',this,false,'El coste total de construcción puede diferir del valor de mercado actual y no es el denominador estándar.')"><span class="opt-letter">D</span> El coste total de construcción de la vivienda</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q4-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q4-2">
+            <p>2. ¿Cuál es la diferencia entre la metodología Tank-to-Wheel y Well-to-Wheel para vehículos?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q4-2',this,false,'La diferencia no está en el tipo de propietario, sino en el perímetro de las emisiones que se contabilizan.')"><span class="opt-letter">A</span> TtW se aplica a vehículos de empresa y WtW a vehículos particulares</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-2',this,false,'Ambas metodologías pueden aplicarse a cualquier vehículo, independientemente de su tipo.')"><span class="opt-letter">B</span> TtW se aplica a vehículos eléctricos y WtW solo a combustión</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-2',this,true,'¡Correcto! TtW solo cuenta las emisiones del uso (tubo de escape). WtW incluye también la cadena energética completa: extracción, refinado y transporte del combustible, o la generación de la electricidad en el caso de los EVs.')"><span class="opt-letter">C</span> TtW solo mide emisiones del uso del vehículo; WtW incluye toda la cadena energética</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-2',this,false,'TtW sí considera los km recorridos; la diferencia es qué parte de la cadena de emisiones se incluye.')"><span class="opt-letter">D</span> TtW no considera los km recorridos, WtW sí</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q4-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q4-3">
+            <p>3. ¿Cuál es la principal limitación metodológica de incluir deuda soberana en el cálculo de huella financiada?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q4-3',this,false,'Los datos de emisiones de los países están relativamente bien documentados por los inventarios nacionales de la CMNUCC.')"><span class="opt-letter">A</span> Los datos de emisiones de los países no están disponibles públicamente</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-3',this,true,'¡Correcto! Hay un debate metodológico importante: atribuir las emisiones territoriales de un país a los inversores de su deuda es conceptualmente cuestionable, ya que el banco no &quot;controla&quot; la política económica ni las emisiones del país.')"><span class="opt-letter">B</span> Es conceptualmente cuestionable atribuir emisiones de un país entero al banco, ya que el banco no controla la política del país</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-3',this,false,'La deuda soberana sí está incluida en el estándar PCAF, aunque con debate metodológico.')"><span class="opt-letter">C</span> La deuda soberana no está incluida en el estándar PCAF</div>
+              <div class="quiz-option" onclick="answerQuiz('q4-3',this,false,'La deuda soberana tiene su factor de atribución (financed share del PIB o deuda), aunque imperfecto.')"><span class="opt-letter">D</span> No existe ningún factor de atribución posible para deuda soberana</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q4-3"></div>
+          </div>
+        </div>
+
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 4</h3>
+          <ul class="mensajes-list">
+            <li>Cada clase de activo usa su propio denominador: EVIC (corporativo), coste del proyecto, valor del inmueble, valor del vehículo o PIB/deuda del país.</li>
+            <li>Para hipotecas, el EPC es el dato de entrada clave: las mejoras en eficiencia energética del hogar reducen directamente la huella financiada.</li>
+            <li>La deuda soberana tiene un tratamiento metodológico específico y debatido, basado en la intensidad de emisiones del país.</li>
+            <li>PCAF tiene limitaciones reales: disponibilidad de datos, doble conteo, comparabilidad. La transparencia sobre estas limitaciones es parte del estándar.</li>
+            <li>Mejorar la calidad del dato (de niveles 4-5 a 1-2) es una prioridad estratégica para los bancos que quieren gestionar activamente su huella.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(3)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(4)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(5)">Siguiente: PACTA →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= MODULE 5 ========================= -->
+    <div class="module-page" id="module-5">
+      <div class="module-header">
+        <div class="module-badge">📗 Módulo 5</div>
+        <h2>PACTA: Alineación de Carteras con el Acuerdo de París</h2>
+        <p>PCAF nos dice cuánto emite nuestra cartera hoy. PACTA nos dice si esa cartera está alineada con el camino hacia 1,5 °C o 2 °C. Es el paso de la fotografía a la película. Aprendemos cómo medir la distancia entre donde estamos y donde deberíamos estar.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">📊 Escenarios climáticos</span>
+          <span class="module-meta-badge">🏭 Sectores</span>
+          <span class="module-meta-badge">📐 Métricas</span>
+          <span class="module-meta-badge">🎯 Alineamiento</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="objetivos-box">
+          <h3>🎯 Objetivos del módulo</h3>
+          <ul class="objetivos-list">
+            <li>Entender qué es PACTA y en qué se diferencia de PCAF.</li>
+            <li>Conocer los sectores cubiertos y por qué son relevantes.</li>
+            <li>Comprender las tres métricas principales de PACTA: Technology Fuel Mix, Production Volume Trajectory y Emission Intensity.</li>
+            <li>Interpretar el grado de alineamiento de una cartera con un escenario climático.</li>
+            <li>Aplicar un caso práctico completo.</li>
+          </ul>
+        </div>
+
+        <!-- 5.0 -->
+        <div class="section-title"><span class="s-num">5.0</span> De la Huella al Alineamiento</div>
+
+        <div class="card-grid">
+          <div class="card" style="border-top:4px solid var(--azul-medio);padding:20px 24px;">
+            <div style="font-weight:700;color:var(--azul-oscuro);font-size:16px;margin-bottom:10px;">📸 PCAF — La fotografía</div>
+            <p class="text-sm">Responde a la pregunta: <strong>¿Cuánto emite mi cartera HOY?</strong><br><br>Es un inventario: cuantifica las emisiones actuales (tCO₂e) atribuibles a los activos financiados. Nos dice el "peso" de las emisiones, pero no si vamos en la dirección correcta.</p>
+          </div>
+          <div class="card" style="border-top:4px solid var(--verde-medio);padding:20px 24px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);font-size:16px;margin-bottom:10px;">🎬 PACTA — La película</div>
+            <p class="text-sm">Responde a la pregunta: <strong>¿Está mi cartera alineada con una trayectoria 1,5-2 °C?</strong><br><br>Es un análisis forward-looking (orientado al futuro): compara las tecnologías y la producción de la cartera con lo que los escenarios climáticos exigen en los próximos 5 años.</p>
+          </div>
+        </div>
+
+        <!-- 5.1 -->
+        <div class="section-title"><span class="s-num">5.1</span> Qué es PACTA</div>
+        <p>El <strong>Paris Agreement Capital Transition Assessment (PACTA)</strong> es una metodología de evaluación de la alineación de portfolios financieros con escenarios de temperatura derivados del Acuerdo de París. Fue desarrollado por el <em>2° Investing Initiative (2DII)</em> y es de acceso libre y abierto.</p>
+        <p>Su objetivo principal es permitir a instituciones financieras (bancos, aseguradoras, gestoras) evaluar si sus carteras son compatibles con los objetivos climáticos globales, sector por sector y tecnología por tecnología, con un horizonte de 5 años.</p>
+
+        <!-- 5.2 -->
+        <div class="section-title"><span class="s-num">5.2</span> PACTA vs. PCAF: Diferencias Clave</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Aspecto</th><th>PCAF</th><th>PACTA</th></tr></thead>
+            <tbody>
+              <tr><td>Pregunta que responde</td><td>¿Cuánto emite mi cartera hoy?</td><td>¿Está mi cartera alineada con un escenario climático?</td></tr>
+              <tr><td>Temporalidad</td><td>Retrospectiva (emisiones actuales)</td><td>Prospectiva (trayectoria futura a 5 años)</td></tr>
+              <tr><td>Resultado</td><td>Inventario en tCO₂e</td><td>Grado de alineamiento (% de distancia)</td></tr>
+              <tr><td>Datos usados</td><td>Datos financieros + emisiones reportadas</td><td>Datos financieros + asset-level data (activos físicos)</td></tr>
+              <tr><td>Alcance sectorial</td><td>Todas las clases de activo</td><td>Sectores clave de alta temperatura</td></tr>
+              <tr><td>Uso principal</td><td>Inventario, reporting ESG, objetivos SBTi</td><td>Estrategia climática, compromisos sectoriales</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 5.3 -->
+        <div class="section-title"><span class="s-num">5.3</span> Sectores Cubiertos por PACTA</div>
+        <p>PACTA se centra en los sectores responsables de la mayor parte de las emisiones globales y donde la transición tecnológica es más medible y accionable:</p>
+
+        <div class="cat-grid">
+          <div class="cat-item highlight"><div class="cat-num">⚡</div><div><div class="cat-text">Energía / Electricidad</div><div class="cat-sub">Carbón, gas, nuclear, renovables. El sector más analizado.</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">🛢️</div><div><div class="cat-text">Combustibles fósiles</div><div class="cat-sub">Upstream de petróleo y gas. Volúmenes de producción.</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">🚗</div><div><div class="cat-text">Automoción</div><div class="cat-sub">ICE vs. EV. Mix tecnológico de la flota vendida.</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">🏗️</div><div><div class="cat-text">Acero</div><div class="cat-sub">Alto horno vs. arco eléctrico. Intensidad de emisiones.</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">🏚️</div><div><div class="cat-text">Cemento</div><div class="cat-sub">Emisiones de proceso y de energía por tonelada producida.</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">✈️</div><div><div class="cat-text">Aviación</div><div class="cat-sub">Eficiencia de combustible. SAF (combustibles sostenibles).</div></div></div>
+          <div class="cat-item highlight"><div class="cat-num">🚢</div><div><div class="cat-text">Transporte marítimo</div><div class="cat-sub">Eficiencia energética de la flota. Combustibles alternativos.</div></div></div>
+        </div>
+
+        <!-- 5.4 -->
+        <div class="section-title"><span class="s-num">5.4</span> El Enfoque Asset-Based de PACTA</div>
+        <p>La clave de PACTA es conectar la cartera financiera con los activos físicos reales de la economía. En lugar de quedarse en las emisiones declaradas por las empresas, PACTA asocia los préstamos e inversiones con los activos concretos (plantas eléctricas, fábricas, flotas) que producen la energía y los bienes.</p>
+
+        <div class="card-concepto">
+          <div class="card-tag">🌿 Por qué los datos históricos de emisiones no bastan</div>
+          <h4>El problema del enfoque retrospectivo</h4>
+          <p>Saber que una empresa emitió 1.000.000 tCO₂e el año pasado no nos dice si en 5 años estará en camino hacia Net Zero. PACTA va más allá: mira <em>qué tecnologías está usando y planea usar</em>. Si hoy una empresa genera el 40% con carbón pero tiene planeado cerrar esas plantas en 3 años y sustituirlas por renovables, eso no se ve en las emisiones pasadas, pero sí en el análisis PACTA.</p>
+        </div>
+
+        <!-- 5.5 -->
+        <div class="section-title"><span class="s-num">5.5</span> Las Tres Métricas Principales de PACTA</div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">📊 Métrica 1: Technology Fuel Mix (TFM) <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>El <strong>Technology Fuel Mix</strong> mide la composición tecnológica de la producción en la cartera del banco, comparada con la composición que exige el escenario climático.</p>
+            <p>Ejemplo en el sector eléctrico: si la cartera financia empresas que en conjunto generan el 30% de su electricidad con carbón, el 40% con gas y el 30% con renovables, ese es el TFM de la cartera. El escenario 1,5 °C podría exigir para 2030: 2% carbón, 15% gas y 83% renovables. La diferencia entre ambos es la "desalineación".</p>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">📈 Métrica 2: Production Volume Trajectory (PVT) <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>La <strong>Production Volume Trajectory</strong> mide si la cartera va a crecer o reducir la producción de cada tecnología en los próximos 5 años, comparado con lo que el escenario exige.</p>
+            <p>Si el escenario 2 °C exige que la producción de carbón de las empresas en cartera decrezca un 30% en 5 años, y las empresas financiadas tienen planes de incrementarla un 5%, hay una desalineación del 35%. PACTA lo cuantifica empresa por empresa, agregado en la cartera.</p>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <button class="collapsible-toggle" onclick="toggleCollapsible(this)">⚡ Métrica 3: Emission Intensity (EI) <span class="toggle-icon">▼</span></button>
+          <div class="collapsible-body">
+            <p>La <strong>Emission Intensity</strong> mide las emisiones por unidad de producción, y compara la intensidad de la cartera con la del escenario.</p>
+            <div class="table-wrap" style="margin-top:10px;">
+              <table>
+                <thead><tr><th>Sector</th><th>Unidad de intensidad</th><th>Ejemplo de valores</th></tr></thead>
+                <tbody>
+                  <tr><td>Electricidad</td><td>tCO₂/MWh</td><td>Carbón: ~0,9 | Gas: ~0,45 | Solar: ~0,02</td></tr>
+                  <tr><td>Acero</td><td>tCO₂/t acero</td><td>Alto horno: ~1,8 | Arco eléctrico: ~0,4</td></tr>
+                  <tr><td>Cemento</td><td>tCO₂/t cemento</td><td>Global: ~0,65 | Con CCS: ~0,10</td></tr>
+                  <tr><td>Automoción</td><td>gCO₂/km</td><td>ICE: ~150 | Híbrido: ~90 | EV: ~0 (TtW)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top:12px;"><strong>Diferencia entre emisiones absolutas e intensidad:</strong> Una empresa puede reducir su intensidad (emitir menos por unidad producida) pero si crece mucho, sus emisiones absolutas pueden aumentar. PACTA usa intensidad para sectores donde el volumen de producción es difícil de controlar (ej. cemento), y volumen para sectores donde la escala importa (ej. carbón).</p>
+          </div>
+        </div>
+
+        <!-- 5.6 -->
+        <div class="section-title"><span class="s-num">5.6</span> Inputs de la Metodología PACTA</div>
+
+        <div class="card-grid">
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:8px;">📁 Loan Book Data</div>
+            <p class="text-sm">Los datos internos del banco: qué empresas tiene financiadas, en qué sectores, con qué exposición. Es el punto de partida. Sin datos de cartera precisos, no hay análisis PACTA.</p>
+          </div>
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:8px;">🏭 Asset-Level Data</div>
+            <p class="text-sm">Datos de activos físicos de la economía real: qué plantas eléctricas, qué fábricas, qué flotas tienen las empresas financiadas. Proveedores especializados (Global Power System Forecasting, Transition Zero, etc.) compilaron esta información.</p>
+          </div>
+          <div class="card" style="padding:18px 22px;">
+            <div style="font-weight:700;color:var(--verde-oscuro);margin-bottom:8px;">🌡️ Escenarios Climáticos</div>
+            <p class="text-sm">Rutas de descarbonización de organismos científicos y energéticos (IEA, IPCC, NGFS). Definen cómo debería evolucionar cada sector para que el mundo alcance 1,5 °C o 2 °C.</p>
+          </div>
+        </div>
+
+        <!-- 5.7 -->
+        <div class="section-title"><span class="s-num">5.7</span> Estructura del Proceso PACTA</div>
+        <div class="step-diagram" style="flex-direction:row;flex-wrap:wrap;gap:6px;">
+          <div class="step-item" style="min-width:120px;">
+            <div class="step-num">Paso 1</div>
+            <div class="step-text">📁 Dato interno del banco (loan book)</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item" style="min-width:120px;">
+            <div class="step-num">Paso 2</div>
+            <div class="step-text">🏷️ Identificación sectorial de empresas</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item" style="min-width:120px;">
+            <div class="step-num">Paso 3</div>
+            <div class="step-text">🔗 Enlace con asset-level data</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item" style="min-width:120px;">
+            <div class="step-num">Paso 4</div>
+            <div class="step-text">📊 Comparación con escenario climático</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-item" style="min-width:120px;">
+            <div class="step-num">Paso 5</div>
+            <div class="step-text">✅ Output de alineamiento</div>
+          </div>
+        </div>
+
+        <!-- 5.8 -->
+        <div class="section-title"><span class="s-num">5.8</span> Escenarios Climáticos</div>
+        <p>Un <strong>escenario climático</strong> no es una predicción: es una narrativa cuantificada sobre cómo debería evolucionar la economía para alcanzar un objetivo de temperatura. Distintos organismos publican distintos escenarios:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Escenario</th><th>Organismo</th><th>Temperatura objetivo</th><th>Características</th></tr></thead>
+            <tbody>
+              <tr><td>NZE (Net Zero Emissions by 2050)</td><td>IEA</td><td>1,5 °C</td><td>Descarbonización muy agresiva, gran rol de CCS y renovables, elimina carbón en electricidad antes de 2030</td></tr>
+              <tr><td>APS (Announced Pledges Scenario)</td><td>IEA</td><td>~1,7 °C</td><td>Basado en compromisos anunciados por los países; más moderado que NZE</td></tr>
+              <tr><td>STEPS (Stated Policies)</td><td>IEA</td><td>~2,4 °C</td><td>Solo cuenta políticas ya implementadas. Escenario de referencia no alineado</td></tr>
+              <tr><td>B2DS / 2DS</td><td>IEA / SDS</td><td>2 °C / 1,75 °C</td><td>Escenarios intermedios de transición ordenada</td></tr>
+              <tr><td>NGFS</td><td>Red de bancos centrales</td><td>Varios</td><td>Diseñados para supervisión financiera; desagregación por sector y región</td></tr>
+              <tr><td>SSPs / RCPs</td><td>IPCC</td><td>Varios (1,5 a 4+°C)</td><td>Base científica; gran variedad de trayectorias socioeconómicas</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 5.9 -->
+        <div class="section-title"><span class="s-num">5.9</span> Cálculo del Grado de Alineamiento</div>
+
+        <div class="formula-box">
+          <div class="formula-label">📐 Distancia de Alineamiento</div>
+          <div class="formula-main">Distancia (%) = (Indicador cartera / Indicador escenario) − 1</div>
+          <div class="formula-vars">
+            Si el resultado es <span>&gt; 0</span>: la cartera está por encima del escenario (DESALINEADA en esa métrica)<br>
+            Si el resultado es <span>= 0</span>: la cartera está exactamente en el escenario (ALINEADA)<br>
+            Si el resultado es <span>&lt; 0</span>: la cartera es mejor que el escenario (SOBRE-ALINEADA)
+          </div>
+        </div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Ejemplo de distancia</div>
+          <h4>Intensidad de emisiones eléctricas</h4>
+          <p>La cartera eléctrica del banco tiene una intensidad media de <strong>600 kgCO₂/MWh</strong>.<br>El escenario NZE exige para 2030 una intensidad de <strong>400 kgCO₂/MWh</strong>.</p>
+          <div style="background:var(--verde-oscuro);color:var(--blanco);font-family:'Courier New',monospace;padding:10px 14px;border-radius:8px;margin-top:12px;font-size:13px;">
+            Distancia = (600 / 400) − 1 = 1,50 − 1 = <strong style="color:#ff9a9a;">+50%</strong>
+          </div>
+          <p style="margin-top:10px;" class="text-sm"><strong>Interpretación:</strong> La cartera tiene una intensidad un 50% superior a la que exige el escenario NZE. Está desalineada: necesita reducir la intensidad media de sus exposiciones eléctricas.</p>
+        </div>
+
+        <!-- 5.10 CASO PRÁCTICO -->
+        <div class="section-title"><span class="s-num">5.10</span> Caso Práctico — Cartera Eléctrica</div>
+
+        <div class="card-ejemplo">
+          <div class="card-tag">💡 Datos del caso</div>
+          <h4>Banco con tres exposiciones en el sector eléctrico</h4>
+          <div class="table-wrap" style="margin-top:10px;">
+            <table>
+              <thead><tr><th>Empresa</th><th>Exposición</th><th>% Carbón</th><th>% Gas</th><th>% Renovables</th></tr></thead>
+              <tbody>
+                <tr><td>Empresa A</td><td>100 M€</td><td>50%</td><td>30%</td><td>20%</td></tr>
+                <tr><td>Empresa B</td><td>100 M€</td><td>10%</td><td>40%</td><td>50%</td></tr>
+                <tr><td>Empresa C</td><td>100 M€</td><td>0%</td><td>20%</td><td>80%</td></tr>
+                <tr style="background:var(--gris-claro);font-weight:700;"><td>Mix Cartera</td><td>300 M€ total</td><td>20%</td><td>30%</td><td>50%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="border:2px solid var(--verde-medio);">
+          <div style="font-weight:800;font-size:16px;color:var(--verde-oscuro);margin-bottom:16px;">📊 Análisis de alineamiento</div>
+
+          <div style="font-weight:700;color:var(--texto-principal);margin-bottom:12px;">Mix de la cartera vs. Escenario NZE (objetivo 2030)</div>
+          <div class="scenario-bar-wrap">
+            <div class="scenario-bar-item">
+              <div class="scenario-bar-label"><span>Carbón</span><span>Cartera: 20% | Escenario: 5%</span></div>
+              <div class="scenario-bar-track">
+                <div class="scenario-bar-fill bar-coal" style="width:20%"></div>
+                <div class="bar-target" style="left:5%"></div>
+              </div>
+              <div class="scenario-legend"><div class="legend-item"><div class="legend-dot" style="background:#555"></div>Cartera 20%</div><div class="legend-item"><div class="legend-dot" style="background:var(--rojo-alerta)"></div>Objetivo 5% — Exceso: +300%</div></div>
+            </div>
+            <div class="scenario-bar-item">
+              <div class="scenario-bar-label"><span>Gas</span><span>Cartera: 30% | Escenario: 15%</span></div>
+              <div class="scenario-bar-track">
+                <div class="scenario-bar-fill bar-gas" style="width:30%"></div>
+                <div class="bar-target" style="left:15%"></div>
+              </div>
+              <div class="scenario-legend"><div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div>Cartera 30%</div><div class="legend-item"><div class="legend-dot" style="background:var(--rojo-alerta)"></div>Objetivo 15% — Exceso: +100%</div></div>
+            </div>
+            <div class="scenario-bar-item">
+              <div class="scenario-bar-label"><span>Renovables</span><span>Cartera: 50% | Escenario: 80%</span></div>
+              <div class="scenario-bar-track">
+                <div class="scenario-bar-fill bar-renew" style="width:50%"></div>
+                <div class="bar-target" style="left:80%"></div>
+              </div>
+              <div class="scenario-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--verde-claro)"></div>Cartera 50%</div><div class="legend-item"><div class="legend-dot" style="background:var(--rojo-alerta)"></div>Objetivo 80% — Déficit: −37,5%</div></div>
+            </div>
+          </div>
+
+          <div style="background:#fde8e5;border-radius:10px;padding:16px 20px;border-left:4px solid var(--rojo-alerta);margin-top:14px;">
+            <div style="font-weight:700;color:var(--rojo-alerta);margin-bottom:6px;">⚠️ Conclusión: Cartera DESALINEADA</div>
+            <p class="text-sm">La cartera tiene demasiado carbón (20% vs. 5% requerido), demasiado gas (30% vs. 15% requerido) y muy pocas renovables (50% vs. 80% requerido). Para alinearse con el escenario NZE, el banco debería:</p>
+            <ul style="margin-top:8px;">
+              <li class="text-sm">Reducir exposición a empresas dependientes del carbón (especialmente Empresa A)</li>
+              <li class="text-sm">Aumentar significativamente la financiación de proyectos y empresas renovables</li>
+              <li class="text-sm">Fijar objetivos sectoriales de reducción del mix de carbón a 5 años</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5.11 Limitaciones -->
+        <div class="section-title"><span class="s-num">5.11</span> Limitaciones de PACTA</div>
+
+        <div class="card-error">
+          <div class="card-tag">❌ Limitaciones a conocer</div>
+          <p><strong>1. Cobertura sectorial limitada:</strong> PACTA analiza bien los sectores de alta temperatura (electricidad, petróleo, gas, automoción, acero, cemento, aviación, marítimo), pero no cubre agricultura, construcción, servicios o industria ligera.</p>
+          <p style="margin-top:8px;"><strong>2. Dependencia de asset-level data:</strong> La calidad del análisis depende de la completitud y actualización de las bases de datos de activos físicos. Los activos privados o en geografías poco cubiertas pueden quedar fuera.</p>
+          <p style="margin-top:8px;"><strong>3. Sensibilidad a escenarios:</strong> Los resultados cambian significativamente según el escenario climático elegido (NZE vs. STEPS). No hay consenso sobre cuál usar.</p>
+          <p style="margin-top:8px;"><strong>4. Horizonte temporal limitado:</strong> PACTA trabaja con proyecciones a 5 años. Esto es útil pero insuficiente para activos financieros de larga duración (hipotecas a 30 años, project finance a 20 años).</p>
+          <p style="margin-top:8px;"><strong>5. Scope 3 del cliente:</strong> En algunos sectores, PACTA no cubre completamente el Scope 3 del cliente (ej. emisiones del uso del combustible en petróleo y gas).</p>
+        </div>
+
+        <!-- Mini-quiz M5 -->
+        <div class="quiz-section">
+          <h3>🧠 Mini-Quiz · Módulo 5</h3>
+          <div class="quiz-subtitle">Comprueba tu comprensión de PACTA y el análisis de alineamiento.</div>
+
+          <div class="quiz-question" id="q5-1">
+            <p>1. ¿Cuál es la diferencia fundamental entre PCAF y PACTA?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q5-1',this,false,'PCAF cubre todas las clases de activo, mientras que PACTA se centra en sectores de alta temperatura. Pero la diferencia fundamental es otra.')"><span class="opt-letter">A</span> PCAF cubre más clases de activo que PACTA</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-1',this,true,'¡Correcto! PCAF cuantifica las emisiones actuales de la cartera (foto del presente). PACTA evalúa si la cartera está alineada con trayectorias climáticas futuras (película del futuro). Son complementarios.')"><span class="opt-letter">B</span> PCAF mide las emisiones actuales; PACTA evalúa si la cartera está en trayectoria hacia objetivos climáticos</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-1',this,false,'Ambos marcos son relevantes para bancos. No es la diferencia fundamental.')"><span class="opt-letter">C</span> PCAF es para bancos y PACTA solo para gestoras de activos</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-1',this,false,'Ambos marcos son voluntarios en origen, aunque PCAF está ganando peso regulatorio.')"><span class="opt-letter">D</span> PCAF es obligatorio y PACTA es voluntario</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q5-1"></div>
+          </div>
+
+          <div class="quiz-question" id="q5-2">
+            <p>2. Si la intensidad de emisiones de una cartera eléctrica es 800 kgCO₂/MWh y el escenario exige 500 kgCO₂/MWh, ¿cuál es la distancia de alineamiento?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q5-2',this,false,'La diferencia absoluta es 300 kgCO₂/MWh, pero PACTA usa la distancia porcentual.')"><span class="opt-letter">A</span> −300 kgCO₂/MWh</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-2',this,false,'37,5% sería si el escenario fuera mayor que la cartera. Aquí la cartera supera al escenario.')"><span class="opt-letter">B</span> −37,5%</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-2',this,true,'¡Correcto! Distancia = (800/500) − 1 = 1,60 − 1 = +60%. La cartera está un 60% por encima de la intensidad objetivo. Desalineada.')"><span class="opt-letter">C</span> +60%</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-2',this,false,'Para obtener +300% la cartera debería ser 4 veces el escenario. Aquí es 1,6 veces.')"><span class="opt-letter">D</span> +300%</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q5-2"></div>
+          </div>
+
+          <div class="quiz-question" id="q5-3">
+            <p>3. ¿Qué son los "asset-level data" en el contexto de PACTA?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerQuiz('q5-3',this,false,'Los datos contables de los activos del balance del banco son los datos financieros del banco, no los asset-level data de PACTA.')"><span class="opt-letter">A</span> Los datos contables de los activos en el balance del banco</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-3',this,false,'Los datos de las agencias ESG son ratings y puntuaciones, no datos de activos físicos de la economía real.')"><span class="opt-letter">B</span> Las puntuaciones ESG de las agencias de rating</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-3',this,true,'¡Correcto! Los asset-level data son bases de datos que identifican los activos físicos reales de la economía (plantas eléctricas, fábricas, flotas, etc.) que pertenecen a cada empresa, con sus características de producción y tecnología.')"><span class="opt-letter">C</span> Datos sobre activos físicos reales (plantas, fábricas, flotas) de las empresas financiadas</div>
+              <div class="quiz-option" onclick="answerQuiz('q5-3',this,false,'Los datos de emisiones históricas son el input de PCAF, no el enfoque diferenciador de PACTA.')"><span class="opt-letter">D</span> Los datos históricos de emisiones reportados por las empresas</div>
+            </div>
+            <div class="quiz-feedback" id="fb-q5-3"></div>
+          </div>
+        </div>
+
+        <div class="mensajes-box">
+          <h3>💡 Mensajes Clave — Módulo 5</h3>
+          <ul class="mensajes-list">
+            <li>PCAF responde "¿cuánto emite hoy?"; PACTA responde "¿vamos en la dirección correcta?"</li>
+            <li>PACTA conecta los datos financieros con activos físicos reales, permitiendo un análisis forward-looking por tecnología.</li>
+            <li>Las tres métricas clave son: Technology Fuel Mix (composición tecnológica), Production Volume Trajectory (volumen futuro) y Emission Intensity (emisiones por unidad).</li>
+            <li>La distancia de alineamiento = (indicador cartera / indicador escenario) − 1. Positivo significa desalineado al alza.</li>
+            <li>La elección del escenario climático (NZE, APS, 2DS) afecta significativamente los resultados. La transparencia sobre el escenario usado es esencial.</li>
+          </ul>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(4)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(5)">✔ Marcar como completado</button>
+          <button class="btn btn-primary" onclick="goToModule(6)">Evaluación Final →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= EVALUACIÓN FINAL ========================= -->
+    <div class="module-page" id="module-6">
+      <div class="module-header">
+        <div class="module-badge">🏆 Evaluación Final</div>
+        <h2>Evaluación Global del Curso</h2>
+        <p>Demuestra que has asimilado los conceptos clave de todos los módulos. Esta evaluación cubre GEI, PCAF, EVIC, project finance, hipotecas y PACTA.</p>
+        <div class="module-meta">
+          <span class="module-meta-badge">📋 15 preguntas</span>
+          <span class="module-meta-badge">⏱️ ~15 minutos</span>
+        </div>
+      </div>
+      <div class="module-body">
+
+        <div class="quiz-final" id="final-quiz">
+          <h3>🏆 Evaluación Final — Huella Financiada y Emisiones Financiadas</h3>
+          <p class="qf-desc">Responde las 15 preguntas para obtener tu puntuación. Recibirás feedback en cada pregunta.</p>
+
+          <!-- Q1 -->
+          <div class="quiz-question" id="qf-1" style="margin-bottom:22px;">
+            <p><strong>1.</strong> ¿Qué significa CO₂ equivalente (CO₂e)?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-1',this,false,'Solo el CO₂ atmosférico no incluye otros GEI. El CO₂e es la unidad que permite sumarlos todos.')"><span class="opt-letter">A</span> El CO₂ que existe en la atmósfera</div>
+              <div class="quiz-option" onclick="answerFinal('qf-1',this,true,'¡Correcto! CO₂e es la unidad común que permite sumar todos los GEI, convirtiendo su potencial de calentamiento al equivalente en CO₂.')"><span class="opt-letter">B</span> Una unidad para comparar todos los GEI usando el potencial de calentamiento global</div>
+              <div class="quiz-option" onclick="answerFinal('qf-1',this,false,'El CO₂ equivalente no es específico del sector energético: aplica a todos los sectores.')"><span class="opt-letter">C</span> El CO₂ emitido por el sector energético</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-1"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-question" id="qf-2" style="margin-bottom:22px;">
+            <p><strong>2.</strong> ¿En qué Alcance (Scope) del GHG Protocol se incluyen las emisiones financiadas de un banco?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-2',this,false,'Scope 1 son las emisiones directas propias del banco, como calderas o generadores.')"><span class="opt-letter">A</span> Scope 1</div>
+              <div class="quiz-option" onclick="answerFinal('qf-2',this,false,'Scope 2 recoge la electricidad que el banco consume. No incluye a sus clientes.')"><span class="opt-letter">B</span> Scope 2</div>
+              <div class="quiz-option" onclick="answerFinal('qf-2',this,true,'¡Correcto! Las emisiones financiadas corresponden al Scope 3, Categoría 15 (Inversiones).')"><span class="opt-letter">C</span> Scope 3, Categoría 15</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-2"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-question" id="qf-3" style="margin-bottom:22px;">
+            <p><strong>3.</strong> ¿Qué ocurre con las emisiones evitadas bajo PCAF?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-3',this,true,'¡Correcto! Las emisiones evitadas se reportan como métrica adicional y nunca se restan del inventario principal de emisiones financiadas.')"><span class="opt-letter">A</span> Se reportan de forma separada, sin restarse del inventario de emisiones financiadas</div>
+              <div class="quiz-option" onclick="answerFinal('qf-3',this,false,'Las emisiones evitadas no se restan: sería incorrecto mostrar una cifra neta combinando emisiones y evitadas.')"><span class="opt-letter">B</span> Se restan de las emisiones financiadas para obtener la huella neta</div>
+              <div class="quiz-option" onclick="answerFinal('qf-3',this,false,'PCAF sí tiene metodología para las emisiones evitadas y fomenta su reporte.')"><span class="opt-letter">C</span> No se incluyen en PCAF</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-3"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-question" id="qf-4" style="margin-bottom:22px;">
+            <p><strong>4.</strong> El EVIC de una empresa es 500 M€ y el banco tiene 25 M€ de préstamo. ¿Cuál es el factor de atribución?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-4',this,false,'25 es la diferencia, pero no el factor de atribución.')"><span class="opt-letter">A</span> 25%</div>
+              <div class="quiz-option" onclick="answerFinal('qf-4',this,true,'¡Correcto! FA = 25 M€ / 500 M€ = 0,05 = 5%.')"><span class="opt-letter">B</span> 5%</div>
+              <div class="quiz-option" onclick="answerFinal('qf-4',this,false,'Para obtener 20 el banco tendría 100 M€ sobre 500 M€.')"><span class="opt-letter">C</span> 20%</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-4"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-question" id="qf-5" style="margin-bottom:22px;">
+            <p><strong>5.</strong> En project finance, ¿qué denominador se usa para el factor de atribución?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-5',this,false,'El EVIC es para empresas cotizadas o privadas. En project finance no hay &quot;empresa&quot; como tal.')"><span class="opt-letter">A</span> El EVIC del promotor del proyecto</div>
+              <div class="quiz-option" onclick="answerFinal('qf-5',this,true,'¡Correcto! En project finance, el denominador es el coste total del proyecto.')"><span class="opt-letter">B</span> El coste total del proyecto</div>
+              <div class="quiz-option" onclick="answerFinal('qf-5',this,false,'Los ingresos del proyecto no son el denominador estándar en PCAF para project finance.')"><span class="opt-letter">C</span> Los ingresos anuales del proyecto</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-5"></div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="quiz-question" id="qf-6" style="margin-bottom:22px;">
+            <p><strong>6.</strong> ¿Cuál es el nivel de calidad del dato PCAF más alto (más preciso)?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-6',this,true,'¡Correcto! En la escala PCAF, el nivel 1 es el más preciso: datos de emisiones verificados por tercero.')"><span class="opt-letter">A</span> Nivel 1 (datos verificados por tercero)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-6',this,false,'El nivel 5 es el menos preciso: estimaciones muy generales.')"><span class="opt-letter">B</span> Nivel 5 (muy estimado)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-6',this,false,'El nivel 3 es intermedio: estimación con datos físicos del activo.')"><span class="opt-letter">C</span> Nivel 3 (estimado con datos físicos)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-6"></div>
+          </div>
+
+          <!-- Q7 -->
+          <div class="quiz-question" id="qf-7" style="margin-bottom:22px;">
+            <p><strong>7.</strong> Para calcular las emisiones financiadas de una hipoteca, el indicador de eficiencia energética clave es:</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-7',this,false,'El EVIC aplica a empresas, no a propietarios de viviendas.')"><span class="opt-letter">A</span> El EVIC del propietario</div>
+              <div class="quiz-option" onclick="answerFinal('qf-7',this,true,'¡Correcto! El EPC (Energy Performance Certificate / Certificado de Eficiencia Energética) es el indicador principal para hipotecas, ya que mide la eficiencia energética de la vivienda.')"><span class="opt-letter">B</span> El EPC (Energy Performance Certificate)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-7',this,false,'El factor de emisión del mix eléctrico es un input adicional, pero el dato de entrada sobre la vivienda es el EPC.')"><span class="opt-letter">C</span> El factor de emisión del mix eléctrico nacional</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-7"></div>
+          </div>
+
+          <!-- Q8 -->
+          <div class="quiz-question" id="qf-8" style="margin-bottom:22px;">
+            <p><strong>8.</strong> ¿Cuál es la principal diferencia entre PACTA y PCAF?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-8',this,false,'PCAF cubre más clases de activo, pero la diferencia principal es conceptual, no de cobertura.')"><span class="opt-letter">A</span> PCAF cubre más clases de activo que PACTA</div>
+              <div class="quiz-option" onclick="answerFinal('qf-8',this,true,'¡Correcto! PCAF mide las emisiones actuales (fotografía). PACTA evalúa si la cartera está en la trayectoria correcta para los objetivos climáticos (película).')"><span class="opt-letter">B</span> PCAF mide emisiones actuales; PACTA evalúa alineación con trayectorias climáticas</div>
+              <div class="quiz-option" onclick="answerFinal('qf-8',this,false,'Ambos son frameworks financieros climáticos. La diferencia no es el sector de aplicación.')"><span class="opt-letter">C</span> PCAF aplica a bancos y PACTA a aseguradoras</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-8"></div>
+          </div>
+
+          <!-- Q9 -->
+          <div class="quiz-question" id="qf-9" style="margin-bottom:22px;">
+            <p><strong>9.</strong> Un banco tiene exposición de 10 M€ a una empresa con EVIC = 200 M€ y emisiones S1+S2 = 600.000 tCO₂e. ¿Cuáles son las emisiones financiadas?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-9',this,true,'¡Correcto! FA = 10/200 = 5%. EF = 600.000 × 0,05 = 30.000 tCO₂e.')"><span class="opt-letter">A</span> 30.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerFinal('qf-9',this,false,'Para obtener 60.000 el FA sería 10%, lo que requeriría exposición de 20 M€.')"><span class="opt-letter">B</span> 60.000 tCO₂e</div>
+              <div class="quiz-option" onclick="answerFinal('qf-9',this,false,'3.000 sería si el FA fuera 0,5% (exposición de 1 M€ sobre 200 M€).')"><span class="opt-letter">C</span> 3.000 tCO₂e</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-9"></div>
+          </div>
+
+          <!-- Q10 -->
+          <div class="quiz-question" id="qf-10" style="margin-bottom:22px;">
+            <p><strong>10.</strong> ¿Cuál de estos GEI tiene el mayor Potencial de Calentamiento Global (GWP) a 100 años?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-10',this,false,'El CO₂ tiene GWP = 1, es el gas de referencia.')"><span class="opt-letter">A</span> CO₂ (dióxido de carbono)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-10',this,false,'El CH₄ tiene GWP de 27-30, muy alto, pero no el mayor.')"><span class="opt-letter">B</span> CH₄ (metano)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-10',this,true,'¡Correcto! El SF₆ tiene un GWP de 25.200, siendo el GEI más potente del protocolo de Kioto.')"><span class="opt-letter">C</span> SF₆ (hexafluoruro de azufre)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-10"></div>
+          </div>
+
+          <!-- Q11 -->
+          <div class="quiz-question" id="qf-11" style="margin-bottom:22px;">
+            <p><strong>11.</strong> ¿Qué significa "stranded asset" en el contexto del cambio climático?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-11',this,false,'Un activo en el extranjero no es un stranded asset por su localización, sino por su pérdida de valor relacionada con el clima.')"><span class="opt-letter">A</span> Un activo financiero domiciliado en el extranjero</div>
+              <div class="quiz-option" onclick="answerFinal('qf-11',this,true,'¡Correcto! Un stranded asset es un activo que pierde valor antes de lo esperado debido a la transición energética o a regulaciones climáticas. Ejemplo: una central de carbón forzada a cerrar anticipadamente.')"><span class="opt-letter">B</span> Un activo que pierde valor antes de lo previsto por la transición energética</div>
+              <div class="quiz-option" onclick="answerFinal('qf-11',this,false,'Stranded hace referencia a &quot;varado&quot;, no a préstamos impagados (que serían non-performing loans).')"><span class="opt-letter">C</span> Un préstamo que no puede ser recuperado por el banco</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-11"></div>
+          </div>
+
+          <!-- Q12 -->
+          <div class="quiz-question" id="qf-12" style="margin-bottom:22px;">
+            <p><strong>12.</strong> El Artículo 2.1(c) del Acuerdo de París exige que los flujos financieros sean...</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-12',this,false,'El Acuerdo de París no pide maximizar retornos, aunque hay argumentos para que la transición sea rentable.')"><span class="opt-letter">A</span> Rentables y seguros para los inversores</div>
+              <div class="quiz-option" onclick="answerFinal('qf-12',this,true,'¡Correcto! El Artículo 2.1(c) exige que los flujos de capital sean consistentes con una vía de desarrollo bajo en emisiones y resiliente al clima.')"><span class="opt-letter">B</span> Consistentes con una vía de desarrollo bajo en emisiones y resiliente al clima</div>
+              <div class="quiz-option" onclick="answerFinal('qf-12',this,false,'Los instrumentos verdes son parte de la solución, pero el artículo habla de todos los flujos financieros, no solo de bonos verdes.')"><span class="opt-letter">C</span> Invertidos exclusivamente en instrumentos financieros verdes</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-12"></div>
+          </div>
+
+          <!-- Q13 -->
+          <div class="quiz-question" id="qf-13" style="margin-bottom:22px;">
+            <p><strong>13.</strong> ¿Qué métrica de PACTA evalúa la composición tecnológica (carbón, gas, renovables) de la cartera?</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-13',this,true,'¡Correcto! Technology Fuel Mix (TFM) mide la composición tecnológica de la producción en la cartera, y la compara con la que exige el escenario climático.')"><span class="opt-letter">A</span> Technology Fuel Mix (TFM)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-13',this,false,'Production Volume Trajectory mide si el volumen de producción (ej. GW de carbón) crece o decrece en línea con el escenario.')"><span class="opt-letter">B</span> Production Volume Trajectory (PVT)</div>
+              <div class="quiz-option" onclick="answerFinal('qf-13',this,false,'Emission Intensity mide las emisiones por unidad de producción, no la composición del mix.')"><span class="opt-letter">C</span> Emission Intensity (EI)</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-13"></div>
+          </div>
+
+          <!-- Q14 -->
+          <div class="quiz-question" id="qf-14" style="margin-bottom:22px;">
+            <p><strong>14.</strong> PCAF nació como iniciativa de un grupo de bancos de...</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-14',this,false,'PCAF no nació en Estados Unidos, aunque posteriormente se expandió a ese mercado.')"><span class="opt-letter">A</span> Estados Unidos</div>
+              <div class="quiz-option" onclick="answerFinal('qf-14',this,true,'¡Correcto! PCAF nació en 2015 en los Países Bajos, promovido por bancos como ASN Bank y Triodos.')"><span class="opt-letter">B</span> Países Bajos</div>
+              <div class="quiz-option" onclick="answerFinal('qf-14',this,false,'El GHG Protocol tiene origen americano, pero PCAF es una iniciativa holandesa.')"><span class="opt-letter">C</span> Alemania</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-14"></div>
+          </div>
+
+          <!-- Q15 -->
+          <div class="quiz-question" id="qf-15" style="margin-bottom:22px;">
+            <p><strong>15.</strong> La distancia de alineamiento PACTA se calcula como:</p>
+            <div class="quiz-options">
+              <div class="quiz-option" onclick="answerFinal('qf-15',this,false,'La diferencia absoluta no es la fórmula de PACTA. Se usa la diferencia relativa porcentual.')"><span class="opt-letter">A</span> Indicador cartera − Indicador escenario</div>
+              <div class="quiz-option" onclick="answerFinal('qf-15',this,false,'La inversa daría el escenario como porcentaje de la cartera. En PACTA se usa la cartera sobre el escenario.')"><span class="opt-letter">B</span> (Indicador escenario / Indicador cartera) − 1</div>
+              <div class="quiz-option" onclick="answerFinal('qf-15',this,true,'¡Correcto! Distancia = (Indicador cartera / Indicador escenario) − 1. Si es positivo, la cartera supera el nivel del escenario (desalineada).')"><span class="opt-letter">C</span> (Indicador cartera / Indicador escenario) − 1</div>
+            </div>
+            <div class="quiz-feedback" id="fb-qf-15"></div>
+          </div>
+
+          <div class="qf-score-display" id="final-score-display" style="display:none;">
+            <div class="qf-score-num" id="final-score-num">0/15</div>
+            <div class="qf-score-label" id="final-score-label">Calculando…</div>
+            <div id="final-badge" class="qf-badge"></div>
+            <div style="margin-top:20px;">
+              <button class="btn btn-primary" onclick="resetFinalQuiz()">🔄 Repetir evaluación</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="module-nav-btns">
+          <button class="btn btn-secondary" onclick="goToModule(5)">← Anterior</button>
+          <button class="btn btn-success" onclick="markComplete(6)">✔ Marcar como completado</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- GLOSARIO -->
+<div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+<div class="glosario-panel" id="glosario-panel">
+  <div class="glosario-header">
+    <h3>📖 Glosario de Términos</h3>
+    <button class="glosario-close" onclick="closeAllPanels()">✕</button>
+  </div>
+  <div class="glosario-body">
+    <div class="glosario-item"><div class="glosario-term">Alcance 1 / Scope 1</div><div class="glosario-def">Emisiones de GEI que ocurren físicamente en fuentes que son propiedad de, o están controladas por, la organización. Ej: calderas, vehículos propios.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Alcance 2 / Scope 2</div><div class="glosario-def">Emisiones indirectas asociadas a la generación de energía eléctrica, calor o vapor que la organización compra a terceros.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Alcance 3 / Scope 3</div><div class="glosario-def">Todas las demás emisiones indirectas de la cadena de valor, aguas arriba y aguas abajo. Para bancos, incluye las emisiones de los activos financiados (Categoría 15).</div></div>
+    <div class="glosario-item"><div class="glosario-term">Asset-level data</div><div class="glosario-def">Bases de datos que identifican activos físicos reales (plantas eléctricas, fábricas, flotas) y sus características de producción y tecnología. Clave en PACTA.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Carbon Budget</div><div class="glosario-def">La cantidad total de CO₂ que puede emitirse globalmente para no superar un objetivo de temperatura. Con los ritmos actuales, el presupuesto para 1,5 °C se agotará en pocos años.</div></div>
+    <div class="glosario-item"><div class="glosario-term">EVIC</div><div class="glosario-def">Enterprise Value Including Cash. Valor empresarial que se usa en PCAF como denominador para calcular el factor de atribución en empresas.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Factor de atribución (FA)</div><div class="glosario-def">Porcentaje que representa la exposición financiera del banco sobre el valor total financiable del activo o entidad.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Emisiones financiadas (EF)</div><div class="glosario-def">Emisiones atribuibles a la entidad financiera por su actividad de préstamo o inversión.</div></div>
+    <div class="glosario-item"><div class="glosario-term">PCAF</div><div class="glosario-def">Partnership for Carbon Accounting Financials. Estándar para medir y reportar emisiones financiadas.</div></div>
+    <div class="glosario-item"><div class="glosario-term">PACTA</div><div class="glosario-def">Paris Agreement Capital Transition Assessment. Metodología para evaluar alineamiento de carteras con trayectorias climáticas.</div></div>
+    <div class="glosario-item"><div class="glosario-term">Stranded asset</div><div class="glosario-def">Activo que pierde valor de forma anticipada por cambios regulatorios, tecnológicos o de mercado asociados a la transición climática.</div></div>
+  </div>
+</div>
+
+<!-- HOJA DE FORMULAS -->
+<div class="formulas-panel" id="formulas-panel">
+  <div class="formulas-header">
+    <h3>🔢 Hoja de fórmulas</h3>
+    <button class="formulas-close" onclick="closeAllPanels()">✕</button>
+  </div>
+  <div class="formulas-body">
+    <div class="formula-entry">
+      <div class="fe-name">Factor de atribución</div>
+      <div class="fe-formula">FA = Exposición financiera / Valor total financiable</div>
+      <div class="fe-desc">Define el porcentaje del activo o entidad atribuible al banco.</div>
+    </div>
+    <div class="formula-entry">
+      <div class="fe-name">Emisiones financiadas</div>
+      <div class="fe-formula">EF = Emisiones del cliente o activo × FA</div>
+      <div class="fe-desc">Fórmula base aplicada por PCAF en la mayoría de clases de activo.</div>
+    </div>
+    <div class="formula-entry">
+      <div class="fe-name">Distancia de alineamiento PACTA</div>
+      <div class="fe-formula">(Indicador cartera / Indicador escenario) − 1</div>
+      <div class="fe-desc">Un valor positivo indica sobreexposición frente a la trayectoria objetivo.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar(false)"></div>
+<button class="mobile-toggle" onclick="toggleMobileSidebar(true)">☰ Módulos</button>
+
+<script>
+  let currentModule = 0;
+  const totalModules = 7;
+  const completedModules = new Set();
+  const finalAnswers = {};
+
+  function goToModule(moduleIndex) {
+    const modules = document.querySelectorAll('.module-page');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    if (moduleIndex < 0 || moduleIndex >= modules.length) return;
+
+    modules.forEach((m) => m.classList.remove('active'));
+    navButtons.forEach((b) => b.classList.remove('active'));
+
+    const targetModule = document.getElementById(`module-${moduleIndex}`);
+    const targetNav = document.querySelector(`.nav-btn[data-module="${moduleIndex}"]`);
+    if (targetModule) targetModule.classList.add('active');
+    if (targetNav) targetNav.classList.add('active');
+
+    currentModule = moduleIndex;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toggleMobileSidebar(false);
+  }
+
+  function markComplete(moduleIndex) {
+    completedModules.add(moduleIndex);
+    const check = document.getElementById(`check-${moduleIndex}`);
+    if (check) check.style.display = 'inline-block';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const pct = Math.round((completedModules.size / totalModules) * 100);
+    const fill = document.getElementById('progress-fill');
+    const label = document.getElementById('progress-pct');
+    if (fill) fill.style.width = `${pct}%`;
+    if (label) label.textContent = `${pct}%`;
+  }
+
+  function resetProgress() {
+    completedModules.clear();
+    for (let i = 0; i < totalModules; i += 1) {
+      const check = document.getElementById(`check-${i}`);
+      if (check) check.style.display = 'none';
+    }
+    updateProgress();
+    resetFinalQuiz();
+  }
+
+  function openGlosario() {
+    const panel = document.getElementById('glosario-panel');
+    const overlay = document.getElementById('overlay');
+    if (panel) panel.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+  }
+
+  function openFormulas() {
+    const panel = document.getElementById('formulas-panel');
+    const overlay = document.getElementById('overlay');
+    if (panel) panel.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+  }
+
+  function closeAllPanels() {
+    const overlay = document.getElementById('overlay');
+    const glosario = document.getElementById('glosario-panel');
+    const formulas = document.getElementById('formulas-panel');
+    if (overlay) overlay.classList.remove('open');
+    if (glosario) glosario.classList.remove('open');
+    if (formulas) formulas.classList.remove('open');
+  }
+
+  function toggleMobileSidebar(open) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar || !overlay) return;
+    if (open) {
+      sidebar.classList.add('mobile-open');
+      overlay.classList.add('visible');
+    } else {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('visible');
+    }
+  }
+
+  function answerQuiz(questionId, element, isCorrect, feedback) {
+    const question = document.getElementById(questionId);
+    if (!question) return;
+    question.querySelectorAll('.quiz-option').forEach((opt) => {
+      opt.classList.remove('selected', 'correct', 'incorrect');
+      opt.style.pointerEvents = 'none';
+    });
+    element.classList.add('selected', isCorrect ? 'correct' : 'incorrect');
+    const fb = question.querySelector('.quiz-feedback');
+    if (fb) {
+      fb.textContent = feedback || '';
+      fb.style.display = 'block';
+      fb.style.color = isCorrect ? 'var(--verde-exito)' : 'var(--rojo-alerta)';
+    }
+  }
+
+  function answerFinal(questionId, element, isCorrect, feedback) {
+    answerQuiz(questionId, element, isCorrect, feedback);
+    finalAnswers[questionId] = isCorrect;
+    updateFinalScore();
+  }
+
+  function updateFinalScore() {
+    const total = 15;
+    const answered = Object.keys(finalAnswers).length;
+    if (answered < total) return;
+
+    const score = Object.values(finalAnswers).filter(Boolean).length;
+    const scoreDisplay = document.getElementById('final-score-display');
+    const scoreNum = document.getElementById('final-score-num');
+    const scoreLabel = document.getElementById('final-score-label');
+    const badge = document.getElementById('final-badge');
+    if (!scoreDisplay || !scoreNum || !scoreLabel || !badge) return;
+
+    scoreDisplay.style.display = 'block';
+    scoreNum.textContent = `${score}/${total}`;
+
+    if (score >= 13) {
+      scoreLabel.textContent = 'Excelente dominio del contenido';
+      badge.textContent = '🥇 Nivel Experto';
+      badge.style.background = '#e9f9ef';
+      badge.style.color = 'var(--verde-exito)';
+    } else if (score >= 10) {
+      scoreLabel.textContent = 'Buen resultado, con margen de mejora';
+      badge.textContent = '🥈 Buen Nivel';
+      badge.style.background = '#eef6ff';
+      badge.style.color = 'var(--azul-medio)';
+    } else {
+      scoreLabel.textContent = 'Conviene repasar antes de cerrar el curso';
+      badge.textContent = '📘 Repaso recomendado';
+      badge.style.background = '#fff4e6';
+      badge.style.color = '#b26a00';
+    }
+  }
+
+  function resetFinalQuiz() {
+    Object.keys(finalAnswers).forEach((k) => delete finalAnswers[k]);
+    document.querySelectorAll('.quiz-question .quiz-option').forEach((opt) => {
+      opt.classList.remove('selected', 'correct', 'incorrect');
+      opt.style.pointerEvents = 'auto';
+    });
+    document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+      fb.textContent = '';
+      fb.style.display = 'none';
+    });
+    const scoreDisplay = document.getElementById('final-score-display');
+    if (scoreDisplay) scoreDisplay.style.display = 'none';
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
