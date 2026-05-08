@@ -1754,12 +1754,23 @@ Vehículos → Valor del vehículo</div>
     const main = document.getElementById('main-content');
     const modulePage = document.getElementById(moduleId);
     const moduleHeader = modulePage ? modulePage.querySelector('.module-header') : null;
+    const targetTop = moduleHeader ? moduleHeader.offsetTop : 0;
     if (main) {
-      const targetTop = moduleHeader ? moduleHeader.offsetTop : 0;
       main.scrollTop = targetTop;
       main.scrollTo({ top: targetTop, behavior: 'auto' });
       window.requestAnimationFrame(function() {
         main.scrollTop = targetTop;
+        main.scrollTo({ top: targetTop, behavior: 'auto' });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+      window.setTimeout(function() {
+        main.scrollTop = targetTop;
+        main.scrollTo({ top: targetTop, behavior: 'auto' });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       });
     }
   }
