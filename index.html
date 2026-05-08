@@ -100,10 +100,24 @@
   .hero-card .hc-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.55); font-weight:600; }
   .hero-card .hc-val { font-size:18px; font-weight:800; color:var(--blanco); margin-top:3px; }
   .hero-card .hc-sub { font-size:11px; color:rgba(255,255,255,0.65); margin-top:2px; }
+  .hero.hidden { display:none; }
+  .hero-actions { margin-top:24px; }
+  .hero-start-btn {
+    background:var(--dorado);
+    color:#1f2b24;
+    border:1px solid #e7bd72;
+    border-radius:8px;
+    padding:10px 16px;
+    font-size:13px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .hero-start-btn:hover { background:#e3b15c; }
   /* ===== LAYOUT ===== */
   .app-layout {
     display: flex;
-    min-height: calc(100vh - 10px);
+    min-height: 100vh;
   }
   /* ===== SIDEBAR ===== */
   .sidebar {
@@ -198,6 +212,42 @@
     font-weight:600;
   }
   .module-body { padding: 40px 48px; max-width:960px; }
+  .subslide-controls {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:var(--blanco);
+    border:1px solid var(--gris-medio);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:16px;
+    margin-bottom:0;
+    box-shadow:var(--sombra);
+  }
+  .subslide-meta {
+    font-size:12px;
+    color:var(--texto-secundario);
+    font-weight:600;
+    letter-spacing:0.3px;
+  }
+  .subslide-nav-btn {
+    border:1px solid var(--gris-medio);
+    background:var(--gris-claro);
+    color:var(--texto-principal);
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:12px;
+    font-family:inherit;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .subslide-nav-btn:hover { background:#eaf1ee; }
+  .subslide-nav-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  .subslides-viewport { overflow:hidden; width:100%; }
+  .subslides-track { display:flex; transition:transform 0.35s ease; will-change:transform; }
+  .subslide { flex:0 0 100%; min-width:100%; }
+  .subslide > .section-title:first-child { margin-top:0; }
   /* ===== SECTION HEADINGS ===== */
   .section-title {
     font-size:22px; font-weight:800; color:var(--verde-oscuro);
@@ -562,6 +612,7 @@
     .sidebar-overlay.visible { opacity:1; pointer-events:all; }
     .module-header { padding:28px 24px 24px; }
     .module-body { padding:24px 20px; }
+    .subslide-controls { padding:8px 10px; }
     .step-diagram { gap:6px; }
     .step-arrow { display:none; }
   }
@@ -615,7 +666,7 @@
 </head>
 <body>
 <!-- HERO -->
-<div class="hero">
+<div class="hero" id="hero-cover">
   <div class="hero-badge">🌱 Sustainable Finance · Formación Corporativa</div>
   <h1>Huella Financiada y<br><span>Emisiones Financiadas</span></h1>
   <p>Formación interactiva para entender cómo los bancos miden y gestionan las emisiones asociadas a sus carteras de inversión y financiación.</p>
@@ -637,6 +688,9 @@
       <div class="hc-val">PCAF · PACTA · GHG Protocol · SBTi</div>
     </div>
   </div>
+  <div class="hero-actions">
+    <button class="hero-start-btn" onclick="startTraining()">Comenzar formación</button>
+  </div>
 </div>
 <!-- MAIN LAYOUT -->
 <div class="app-layout">
@@ -647,7 +701,7 @@
     </div>
     <ul class="nav-list" id="nav-list">
       <li class="nav-item">
-        <button class="nav-btn active" data-module="0" onclick="goToModule(0)">
+        <button class="nav-btn" data-module="0" onclick="goToModule(0)">
           <span class="nav-num">0</span>
           <span>Fundamentos: GEI y Clima</span>
           <span class="nav-check" id="check-0" style="display:none">✔</span>
@@ -698,7 +752,7 @@
   <main class="main-content" id="main-content">
 
     <!-- ========================= MODULE 0 ========================= -->
-    <div class="module-page active" id="module-0">
+    <div class="module-page" id="module-0">
       <div class="module-header">
         <div class="module-badge">📗 Módulo 0</div>
         <h2>Fundamentos: Emisiones y Cambio Climático</h2>
@@ -1565,11 +1619,43 @@ Vehículos → Valor del vehículo</div>
   const totalModules = 6;
   const completedModules = new Set();
   const finalAnswers = {};
+  let trainingStarted = false;
+
+  function resetViewportToTop() {
+    const main = document.getElementById('main-content');
+    if (main) {
+      main.scrollTop = 0;
+      main.scrollTo({ top: 0, behavior: 'auto' });
+    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.requestAnimationFrame(function() {
+      if (main) {
+        main.scrollTop = 0;
+        main.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+  }
 
   function goToModule(moduleIndex) {
     const modules = document.querySelectorAll('.module-page');
     const navButtons = document.querySelectorAll('.nav-btn');
+    const hero = document.getElementById('hero-cover');
     if (moduleIndex < 0 || moduleIndex >= modules.length) return;
+
+    if (moduleIndex === 0 && !trainingStarted) {
+      if (hero) hero.classList.remove('hidden');
+      modules.forEach((m) => m.classList.remove('active'));
+      navButtons.forEach((b) => b.classList.remove('active'));
+      const targetNavOnly = document.querySelector('.nav-btn[data-module="0"]');
+      if (targetNavOnly) targetNavOnly.classList.add('active');
+      currentModule = 0;
+      resetViewportToTop();
+      toggleMobileSidebar(false);
+      return;
+    }
+
+    if (hero) hero.classList.add('hidden');
     modules.forEach((m) => m.classList.remove('active'));
     navButtons.forEach((b) => b.classList.remove('active'));
     const targetModule = document.getElementById('module-' + moduleIndex);
@@ -1577,8 +1663,14 @@ Vehículos → Valor del vehículo</div>
     if (targetModule) targetModule.classList.add('active');
     if (targetNav) targetNav.classList.add('active');
     currentModule = moduleIndex;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSubslide('module-' + moduleIndex, 0);
+    resetViewportToTop();
     toggleMobileSidebar(false);
+  }
+
+  function startTraining() {
+    trainingStarted = true;
+    goToModule(0);
   }
 
   function markComplete(moduleIndex) {
@@ -1630,6 +1722,139 @@ Vehículos → Valor del vehículo</div>
     const body = btn.nextElementSibling;
     if (body) body.classList.toggle('open');
   }
+
+  const subslideState = {};
+
+  function getSlideLabel(slide, fallbackIndex) {
+    const title = slide.querySelector('.section-title');
+    if (title) return title.textContent.trim();
+    if (fallbackIndex === 0) return 'Introducción';
+    return 'Submódulo ' + (fallbackIndex + 1);
+  }
+
+  function updateSubslideUi(moduleId) {
+    const state = subslideState[moduleId];
+    if (!state) return;
+    state.track.style.transform = 'translateX(-' + (state.index * 100) + '%)';
+    state.controls.forEach(function(ctrl) {
+      ctrl.prevBtn.disabled = state.index === 0;
+      ctrl.nextBtn.disabled = state.index === state.total - 1;
+      const label = state.labels[state.index] || ('Submódulo ' + (state.index + 1));
+      ctrl.meta.textContent = 'Submódulo ' + (state.index + 1) + ' de ' + state.total + ' · ' + label;
+    });
+  }
+
+  function setSubslide(moduleId, index) {
+    const state = subslideState[moduleId];
+    if (!state) return;
+    if (index < 0) index = 0;
+    if (index > state.total - 1) index = state.total - 1;
+    state.index = index;
+    updateSubslideUi(moduleId);
+    const main = document.getElementById('main-content');
+    const modulePage = document.getElementById(moduleId);
+    const moduleHeader = modulePage ? modulePage.querySelector('.module-header') : null;
+    if (main) {
+      const targetTop = moduleHeader ? moduleHeader.offsetTop : 0;
+      main.scrollTop = targetTop;
+      main.scrollTo({ top: targetTop, behavior: 'auto' });
+      window.requestAnimationFrame(function() {
+        main.scrollTop = targetTop;
+      });
+    }
+  }
+
+  function setupSubslides() {
+    const modulePages = document.querySelectorAll('.module-page');
+    modulePages.forEach(function(page) {
+      const moduleId = page.id;
+      const body = page.querySelector('.module-body');
+      if (!body) return;
+      if (moduleId === 'module-5') return;
+      if (body.dataset.subslidesReady === '1') return;
+
+      const children = Array.from(body.children);
+      const groups = [];
+      let currentGroup = [];
+
+      children.forEach(function(child) {
+        const startsNewSlide = child.classList && child.classList.contains('section-title') && currentGroup.length > 0;
+        if (startsNewSlide) {
+          groups.push(currentGroup);
+          currentGroup = [];
+        }
+        currentGroup.push(child);
+      });
+      if (currentGroup.length > 0) groups.push(currentGroup);
+      if (groups.length <= 1) return;
+
+      const viewport = document.createElement('div');
+      viewport.className = 'subslides-viewport';
+      const track = document.createElement('div');
+      track.className = 'subslides-track';
+
+      const labels = [];
+      const controlsList = [];
+      groups.forEach(function(group, idx) {
+        const slide = document.createElement('div');
+        slide.className = 'subslide';
+        group.forEach(function(node) { slide.appendChild(node); });
+        labels.push(getSlideLabel(slide, idx));
+
+        const controls = document.createElement('div');
+        controls.className = 'subslide-controls';
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'subslide-nav-btn';
+        prevBtn.type = 'button';
+        prevBtn.textContent = '← Submódulo anterior';
+        const meta = document.createElement('div');
+        meta.className = 'subslide-meta';
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'subslide-nav-btn';
+        nextBtn.type = 'button';
+        nextBtn.textContent = 'Siguiente submódulo →';
+        controls.appendChild(prevBtn);
+        controls.appendChild(meta);
+        controls.appendChild(nextBtn);
+        slide.appendChild(controls);
+        controlsList.push({ prevBtn: prevBtn, nextBtn: nextBtn, meta: meta });
+
+        track.appendChild(slide);
+      });
+
+      viewport.appendChild(track);
+      body.appendChild(viewport);
+      body.dataset.subslidesReady = '1';
+
+      subslideState[moduleId] = {
+        index: 0,
+        total: groups.length,
+        labels: labels,
+        track: track,
+        controls: controlsList
+      };
+
+      controlsList.forEach(function(ctrl) {
+        ctrl.prevBtn.addEventListener('click', function() {
+          setSubslide(moduleId, subslideState[moduleId].index - 1);
+        });
+        ctrl.nextBtn.addEventListener('click', function() {
+          setSubslide(moduleId, subslideState[moduleId].index + 1);
+        });
+      });
+
+      updateSubslideUi(moduleId);
+    });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    const active = document.querySelector('.module-page.active');
+    if (!active) return;
+    const moduleId = active.id;
+    if (!subslideState[moduleId]) return;
+    if (e.key === 'ArrowRight') setSubslide(moduleId, subslideState[moduleId].index + 1);
+    if (e.key === 'ArrowLeft') setSubslide(moduleId, subslideState[moduleId].index - 1);
+  });
 
   function answerQuiz(questionId, element, isCorrect, feedback) {
     const question = document.getElementById(questionId);
@@ -1696,6 +1921,7 @@ Vehículos → Valor del vehículo</div>
     if (scoreDisplay) scoreDisplay.style.display = 'none';
   }
 
+  setupSubslides();
 </script>
 </body>
 </html>
